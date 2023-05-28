@@ -810,3 +810,11 @@
 //     let vec: Vec<_> = arr.into();
 //     println!("{vec:?}");
 // }
+
+fn main() {
+    let x = 12;
+    let opt_x = Some(&x);
+    assert_eq!(opt_x, Some(&12));
+    let cloned = opt_x.cloned();
+    assert_eq!(cloned, Some(12));
+}

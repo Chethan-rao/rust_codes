@@ -10,11 +10,20 @@
 
 // err() -> It will convert Result<T,E> to Option<E> ignoring Ok(T)
 
-// ok_or() -> Converts Option<T> into Result<T,Err>. If Some() value is found, then it is mapped to Ok(), if None, then Err is passed as an argument inside ok_or(Err)
+// ok_or(err) -> Converts Option<T> into Result<T,Err>. If Some() value is found, then it is mapped to Ok(), if None, then Err is passed as an argument inside ok_or(Err)
 // fn main() {
 //     let a:Option<i32> = Some(5);
 //     let res = a.ok_or("Value Not found");
 //     println!("{res:?}");
+// }
+
+// ok_or_else(closure) -> Transforms the Option<T> into a Result<T, E>, mapping Some(v) to Ok(v) and None to Err(err()).
+// fn main() {
+//     let x = Some("foo");
+//     assert_eq!(x.ok_or_else(|| 0), Ok("foo"));
+
+//     let x: Option<&str> = None;
+//     assert_eq!(x.ok_or_else(|| 0), Err(0));
 // }
 
 // iter() -> If applied on Vector 'a', then u can reuse 'a' after applying iter() also
@@ -63,6 +72,44 @@
 //     println!("{res:?}");   // [1,3]
 // }
 
+// extend()
+// fn main() {
+//     let a = vec![1,2,3];
+//     let mut another = vec![4,5,6];
+//     another.extend(a);
+//     println!("{another:?}");   // [4,5,6,1,2,3]
+// }
+
+// flatten()
+// fn main() {
+//     let a = vec![Some(1),None,Some(3)];
+//     let res = a.into_iter().flatten().collect::<Vec<i32>>();
+//     println!("{res:?}");   // [1,3]
+// }
+
+// is_ok() -> If result is Ok() then returns true else returns false
+// fn main() {
+//     let a = vec!["1.4","A+","0.6","3.6","B-"];
+//     let res = a.iter().filter(|&val| val.parse::<f32>().is_ok()).collect::<Vec<_>>();
+//     println!("{res:?}");   // [1,3]
+// }
+
+// unwrap_or(default: T) -> Returns Some value, else if None, returns default value. It takes the default value directly as an argument.
+// fn main() {
+//     assert_eq!(Some(4).unwrap_or(5), 4);
+//     assert_eq!(None.unwrap_or(5), 5);
+// }
+
+// unwrap_or_else(closure) -> Takes closure - Returns Some value, else if None, returns default value
+// fn main() {
+//     assert_eq!(Some(4).unwrap_or_else(|| 5), 4);
+//     assert_eq!(None.unwrap_or_else(|| 5), 5);
+// }
+
+// In summary, unwrap_or() takes the default value directly as an argument, while unwrap_or_else() takes a closure that provides
+// the default value if needed. unwrap_or_else() allows for more complex logic or computations to determine the default value when
+// unwrapping fails, making it more flexible in certain scenarios.
+
 // unwrap_or_default() -> Returns Ok(T) or if its Err then returns default implementation of that type
 // #[derive(Default, Debug)]
 // struct User {
@@ -87,30 +134,55 @@
 //     println!("{b}");   // 0
 // }
 
-// extend()
+// map(closure) -> Converts Option<T> to Option<U> consuming Some value
 // fn main() {
-//     let a = vec![1,2,3];
-//     let mut another = vec![4,5,6];
-//     another.extend(a);
-//     println!("{another:?}");   // [4,5,6,1,2,3]
+//     let str = Some("abc");
+//     let len = str.map(|val| val.len());
+//     assert_eq!(len, Some(3));
 // }
 
-// flatten()
+// map_or(default_value, closure) -> Returns the provided default result (if none), or applies a closure to the contained value (if any).
 // fn main() {
-//     let a = vec![Some(1),None,Some(3)];
-//     let res = a.into_iter().flatten().collect::<Vec<i32>>();
-//     println!("{res:?}");   // [1,3]
+//     let x = Some("foo");
+//     assert_eq!(x.map_or(42, |v| v.len()), 3);
+
+//     let x: Option<&str> = None;
+//     assert_eq!(x.map_or(42, |v| v.len()), 42);
 // }
 
-// is_ok() -> If result is Ok() then returns true else returns false
+// map_or_else(default_closure, closure) -> Computes a default function result (if none), or applies a different closure to the contained value (if any).
 // fn main() {
-//     let a = vec!["1.4","A+","0.6","3.6","B-"];
-//     let res = a.iter().filter(|&val| val.parse::<f32>().is_ok()).collect::<Vec<_>>();
-//     println!("{res:?}");   // [1,3]
+//     let k = 21;
+
+//     let x = Some("foo");
+//     assert_eq!(x.map_or_else(|| 2 * k, |v| v.len()), 3);
+
+//     let x: Option<&str> = None;
+//     assert_eq!(x.map_or_else(|| 2 * k, |v| v.len()), 42);
 // }
 
-// unwrap_or_else() -> Returns Some value, else if None, returns default value
+// or(Option<T>) -> Option1.or(Option2) -> Returns the option if it contains a Some(value), otherwise returns Option2.
 // fn main() {
-//     assert_eq!(Some(4).unwrap_or_else(|| 5), 4);
-//     assert_eq!(None.unwrap_or_else(|| 5), 5);
+//     let op1 = Some(4);
+//     let op2 = Some(5);
+//     assert_eq!(op1.or(op2), Some(4));
+
+//     let op1 = None;
+//     let op2 = Some(5);
+//     assert_eq!(op1.or(op2), Some(5));
+// }
+
+// or_else(closure) where closure should return an Option
+// fn main() {
+//     assert_eq!(Some(4).or_else(|| Some(5)), Some(4));
+//     assert_eq!(None.or_else(|| Some(5)), Some(5));
+// }
+
+// cloned() -> Maps an Option<&T> to an Option<T> by cloning the contents of the option.
+// fn main() {
+//     let x = 12;
+//     let opt_x = Some(&x);
+//     assert_eq!(opt_x, Some(&12));
+//     let cloned = opt_x.cloned();
+//     assert_eq!(cloned, Some(12));
 // }
