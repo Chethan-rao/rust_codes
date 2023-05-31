@@ -186,3 +186,12 @@
 //     let cloned = opt_x.cloned();
 //     assert_eq!(cloned, Some(12));
 // }
+
+// chain() -> Takes 2 iterator and appends it
+// fn main() {
+//     let v1 = vec![1, 2, 3];
+//     let v2 = vec![4, 5, 6];
+//     for ele in v1.iter().chain(v2.iter()) {
+//         println!("{ele}");     // 1 2 3 4 5 6
+//     }
+// }

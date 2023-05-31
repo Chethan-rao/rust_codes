@@ -811,7 +811,71 @@
 //     println!("{vec:?}");
 // }
 
-fn main() -> () {
-    let x = || 5;
-    println!("{}", x());
-}
+// use std::collections::HashMap;
+
+// fn main() -> () {
+//     let hm = HashMap::from([("abc", HashMap::from([("123", vec![1, 2, 3])]))]);
+
+//     let res = hm.get("abc");
+//     let boolean = {
+//         if let Some(res) = res {
+//             let inner_hm = res.get("123");
+//             if let Some(inner_hm) = inner_hm {
+//                 inner_hm.contains(&1)
+//             } else {
+//                 false
+//             }
+//         } else {
+//             false
+//         }
+//     };
+
+//     let boolean2 = hm
+//         .get("abc")
+//         .and_then(|hm| hm.get("123"))
+//         .map(|inner_hm| inner_hm.contains(&4))
+//         .unwrap_or(false);
+//     println!("{boolean}");
+
+//     println!("{boolean2}");
+// }
+
+// 30. change_context()
+
+// use error_stack::{IntoReport, Result, ResultExt};
+// use thiserror::Error;
+
+// #[derive(Debug, Error)]
+// enum CustomError {
+//     #[error("could not parse value")]
+//     ParseError,
+//     #[error("could not add vec values")]
+//     SummationError,
+//     #[error("Error unknown")]
+//     UnknownError,
+// }
+// fn main() {
+//     let vec = vec!["1", "2", "3"];
+//     let sum = summation(vec).change_context(CustomError::SummationError);
+//     println!("{sum:?}");
+// }
+
+// fn summation(vec: Vec<&str>) -> Result<i32, CustomError> {
+//     let mut sum = 0;
+//     for &ele in vec.iter() {
+//         let int_val = parse_str(ele)?;
+//         sum += int_val;
+//     }
+//     if sum > 0 {
+//         Ok(sum)
+//     } else {
+//         Result::Err(CustomError::UnknownError.into()) // Converts CustomError into Report<CustomError>
+//     }
+// }
+
+// fn parse_str(ele: &str) -> Result<i32, CustomError> {
+//     ele.parse::<i32>()
+//         .into_report()
+//         .change_context(CustomError::ParseError)
+//         .attach_printable_lazy(|| format!("Pass integer value to parse"))
+// }
