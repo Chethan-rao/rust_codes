@@ -770,9 +770,12 @@
 // }
 
 // // Dyn dispatch
-// fn road_trip(car: &dyn Drive) {
+// fn road_trip(car: Box<dyn Drive>) {
 //     car.drive();
 // }
+
+// struct Abc;
+
 // fn main() {
 //     let sedan = Sedan;
 //     let suv = SUV;
@@ -878,4 +881,46 @@
 //         .into_report()
 //         .change_context(CustomError::ParseError)
 //         .attach_printable_lazy(|| format!("Pass integer value to parse"))
+// }
+
+// fn main() {
+//     let a = "m"
+//         .parse::<i32>()
+//         .map_err(|err| println!("{}", err.to_string()));
+// }
+
+// 31. serde_json
+
+// use serde::{Deserialize, Serialize};
+// #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+// struct Student {
+//     id: i32,
+//     name: String,
+//     branch: Branch,
+// }
+
+// #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+// enum Branch {
+//     CSE,
+//     EC,
+//     IT,
+// }
+// fn main() {
+//     let stud1 = Student {
+//         id: 1,
+//         name: "Chethan".to_string(),
+//         branch: Branch::CSE,
+//     };
+
+//     let json_val = serde_json::to_value(stud1.clone()).unwrap();
+//     println!("{json_val:?}");
+
+//     let original_struct = serde_json::from_value::<Student>(json_val.clone()).unwrap();
+//     println!("{:#?}", original_struct);
+//     assert_eq!(stud1, original_struct);
+
+//     let str = r#"{"id": 2,"name": "Chandana", "branch": "IT"}"#;
+//     let val = serde_json::from_str(str).unwrap();
+//     let stud2 = serde_json::from_value::<Student>(val).unwrap();
+//     println!("{:#?}", stud2);
 // }
