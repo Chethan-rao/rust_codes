@@ -20,10 +20,10 @@
 // ok_or_else(closure) -> Transforms the Option<T> into a Result<T, E>, mapping Some(v) to Ok(v) and None to Err(err()).
 // fn main() {
 //     let x = Some("foo");
-//     assert_eq!(x.ok_or_else(|| 0), Ok("foo"));
+//     assert_eq!(x.ok_or_else(|| "Value is None"), Ok("foo"));
 
 //     let x: Option<&str> = None;
-//     assert_eq!(x.ok_or_else(|| 0), Err(0));
+//     assert_eq!(x.ok_or_else(|| "Value is None"), Err("Value is None"));
 // }
 
 // iter() -> If applied on Vector 'a', then u can reuse 'a' after applying iter() also

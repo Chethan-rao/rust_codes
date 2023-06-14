@@ -784,6 +784,55 @@
 //     road_trip(&suv);
 // }
 
+// 32. Dynamic dispatch 2
+// use std::fmt::Debug;
+
+// trait Car {
+//     fn drive(&self);
+// }
+
+// #[derive(Debug)]
+// struct Bmw;
+
+// impl Bmw {
+//     fn get_prize(&self) -> i32 {
+//         100
+//     }
+// }
+
+// #[derive(Debug)]
+// struct Audi;
+
+// impl Audi {
+//     fn get_prize(&self) -> i32 {
+//         999
+//     }
+// }
+
+// impl Car for Bmw {
+//     fn drive(&self) {
+//         println!("Driving BMW");
+//     }
+// }
+
+// impl Car for Audi {
+//     fn drive(&self) {
+//         println!("Driving Audi");
+//     }
+// }
+
+// fn main() {
+//     let new_bmw = helper1(1);
+//     let new_audi = helper1(2);
+// }
+
+// fn helper1(item: i32) -> &'static dyn Car {
+//     if item == 1 {
+//         return &Bmw;
+//     }
+//     return &Audi;
+// }
+
 // 28. Fron and into -> Both are same, If u implement From trait for a type, then Into will be automatically implemented as well
 // #[derive(Debug)]
 // struct Number {
@@ -810,8 +859,10 @@
 // 29. Vec implments From<array>, that's y u can call into trait on array by specifying Vec as type
 // fn main() {
 //     let arr = [1, 3, 4];
-//     let vec: Vec<_> = arr.into();
-//     println!("{vec:?}");
+//     let vec1 = Vec::from(arr);
+//     let vec2: Vec<_> = arr.into();
+//     println!("{vec1:?}");
+//     println!("{vec2:?}");
 // }
 
 // use std::collections::HashMap;
@@ -858,7 +909,7 @@
 //     UnknownError,
 // }
 // fn main() {
-//     let vec = vec!["1", "2", "3"];
+//     let vec = vec!["1", "2", "-8"];
 //     let sum = summation(vec).change_context(CustomError::SummationError);
 //     println!("{sum:?}");
 // }
@@ -872,7 +923,7 @@
 //     if sum > 0 {
 //         Ok(sum)
 //     } else {
-//         Result::Err(CustomError::UnknownError.into()) // Converts CustomError into Report<CustomError>
+//         Err(CustomError::UnknownError.into()) // Converts CustomError into Report<CustomError>
 //     }
 // }
 
@@ -881,12 +932,6 @@
 //         .into_report()
 //         .change_context(CustomError::ParseError)
 //         .attach_printable_lazy(|| format!("Pass integer value to parse"))
-// }
-
-// fn main() {
-//     let a = "m"
-//         .parse::<i32>()
-//         .map_err(|err| println!("{}", err.to_string()));
 // }
 
 // 31. serde_json
@@ -924,3 +969,16 @@
 //     let stud2 = serde_json::from_value::<Student>(val).unwrap();
 //     println!("{:#?}", stud2);
 // }
+
+// fn main() {
+//     let a = 97;
+//     let char = a as u8 as char;
+//     println!("{char:?}");
+// }
+
+fn main() {
+    let numbers = vec![1, 2, 3, 4, 5, 6];
+    let even_numbers = numbers.iter().filter(|&x| x % 2 == 0).collect::<Vec<_>>();
+    println!("{even_numbers:?}");
+    // Result: even_numbers = [2, 4, 6]
+}
