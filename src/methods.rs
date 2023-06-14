@@ -110,7 +110,7 @@
 // the default value if needed. unwrap_or_else() allows for more complex logic or computations to determine the default value when
 // unwrapping fails, making it more flexible in certain scenarios.
 
-// unwrap_or_default() -> Returns Ok(T) or if its Err then returns default implementation of that type
+// unwrap_or_default() -> Returns value T if Some or OK, or if its Err then returns default implementation of that type
 // #[derive(Default, Debug)]
 // struct User {
 //     id: i32,
@@ -194,4 +194,10 @@
 //     for ele in v1.iter().chain(v2.iter()) {
 //         println!("{ele}");     // 1 2 3 4 5 6
 //     }
+// }
+
+// transpose() -> Option<Result<i32,Err>> -> Result<Option<i32>,Err>
+// fn main() {
+//     let a = Some("5");
+//     let b = a.map(|i| i.parse::<i32>()).transpose();
 // }

@@ -976,9 +976,15 @@
 //     println!("{char:?}");
 // }
 
+// fn main() {
+//     let numbers = vec![1, 2, 3, 4, 5, 6];
+//     let even_numbers = numbers.iter().filter(|&x| x % 2 == 0).collect::<Vec<_>>();
+//     println!("{even_numbers:?}");
+//     // Result: even_numbers = [2, 4, 6]
+// }
+
+// transpose() -> Option<Result<i32,Err>> -> Result<Option<i32>,Err>
 fn main() {
-    let numbers = vec![1, 2, 3, 4, 5, 6];
-    let even_numbers = numbers.iter().filter(|&x| x % 2 == 0).collect::<Vec<_>>();
-    println!("{even_numbers:?}");
-    // Result: even_numbers = [2, 4, 6]
+    let a = Some("5");
+    let b = a.map(|i| i.parse::<i32>()).transpose();
 }
