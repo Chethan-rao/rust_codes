@@ -970,21 +970,62 @@
 //     println!("{:#?}", stud2);
 // }
 
-// fn main() {
-//     let a = 97;
-//     let char = a as u8 as char;
-//     println!("{char:?}");
+// 32. Insert values of different types inside vec
+
+// use std::vec;
+
+// trait Shape {
+//     fn calculate_area(&self) -> i32;
+// }
+// struct Circle {
+//     radius: i32,
 // }
 
-// fn main() {
-//     let numbers = vec![1, 2, 3, 4, 5, 6];
-//     let even_numbers = numbers.iter().filter(|&x| x % 2 == 0).collect::<Vec<_>>();
-//     println!("{even_numbers:?}");
-//     // Result: even_numbers = [2, 4, 6]
+// impl Shape for Circle {
+//     fn calculate_area(&self) -> i32 {
+//         return 3 * self.radius * self.radius;
+//     }
 // }
 
-// transpose() -> Option<Result<i32,Err>> -> Result<Option<i32>,Err>
-fn main() {
-    let a = Some("5");
-    let b = a.map(|i| i.parse::<i32>()).transpose();
-}
+// struct Rec {
+//     h: i32,
+//     b: i32,
+// }
+
+// impl Shape for Rec {
+//     fn calculate_area(&self) -> i32 {
+//         return self.h * self.b;
+//     }
+// }
+// fn main() {
+//     let cir1 = Box::new(Circle { radius: 3 });
+//     let rec1 = Box::new(Rec { h: 4, b: 3 });
+//     let vec: Vec<Box<dyn Shape>> = vec![cir1, rec1];
+//     for item in vec.iter() {
+//         let val = item.calculate_area();
+//         println!("{val}");
+//     }
+// }
+
+// 33. Implement max_Value() for Vec<T> where T can be any type
+
+// trait MaxValue {
+//     type Item;
+//     fn max_value(&self) -> Option<&Self::Item>;
+// }
+
+// impl<T: PartialOrd + Ord> MaxValue for Vec<T> {
+//     type Item = T;
+//     fn max_value(&self) -> Option<&Self::Item> {
+//         self.iter().max()
+//     }
+// }
+// fn main() {
+//     let vec1 = vec![1, 2, 3];
+//     let vec2 = vec!["apple", "banana", "cherry"];
+
+//     println!("{:?}", vec1.max_value());
+//     println!("{:?}", vec2.max_value());
+// }
+
+fn main() {}
