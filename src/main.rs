@@ -1027,5 +1027,100 @@
 //     println!("{:?}", vec1.max_value());
 //     println!("{:?}", vec2.max_value());
 // }
+// }
+
+// impl Shape for Circle {
+//     fn calculate_area(&self) -> i32 {
+//         return 3 * self.radius * self.radius;
+//     }
+// }
+
+// struct Rec {
+//     h: i32,
+//     b: i32,
+// }
+
+// impl Shape for Rec {
+//     fn calculate_area(&self) -> i32 {
+//         return self.h * self.b;
+//     }
+// }
+// fn main() {
+//     let cir1 = Box::new(Circle { radius: 3 });
+//     let rec1 = Box::new(Rec { h: 4, b: 3 });
+//     let vec: Vec<Box<dyn Shape>> = vec![cir1, rec1];
+//     for item in vec.iter() {
+//         let val = item.calculate_area();
+//         println!("{val}");
+//     }
+// }
+
+// 33. Implement max_Value() for Vec<T> where T can be any type
+
+// trait MaxValue {
+//     type Item;
+//     fn max_value(&self) -> Option<&Self::Item>;
+// }
+
+// impl<T: PartialOrd + Ord> MaxValue for Vec<T> {
+//     type Item = T;
+//     fn max_value(&self) -> Option<&Self::Item> {
+//         self.iter().max()
+//     }
+// }
+// fn main() {
+//     let vec1 = vec![1, 2, 3];
+//     let vec2 = vec!["apple", "banana", "cherry"];
+
+//     println!("{:?}", vec1.max_value());
+//     println!("{:?}", vec2.max_value());
+// }
+
+// 34. dynamic dispatch makes a type to forget its own implemented function
+// trait Animal {
+//     fn shout(&self);
+// }
+
+// #[derive(Debug)]
+// struct Dog;
+
+// impl Dog {
+//     fn walk(&self) {
+//         println!("Dog is walking");
+//     }
+// }
+// #[derive(Debug)]
+// struct Fish;
+
+// impl Fish {
+//     fn swim(&self) {
+//         println!("Fish is swimming");
+//     }
+// }
+
+// impl Animal for Dog {
+//     fn shout(&self) {
+//         println!("Dog is shouting");
+//     }
+// }
+// impl Animal for Fish {
+//     fn shout(&self) {
+//         println!("Fish is shouting");
+//     }
+// }
+
+// fn main() {
+//     let animal = return_an(1);
+//     animal.shout();
+//     // animal.walk; // This is type "&dyn Animal", in vtable, there will only be trait methods implemented on this, not the walk() or swim()
+// }
+
+// fn return_an(i: i32) -> &'static dyn Animal {
+//     if i == 1 {
+//         &Dog
+//     } else {
+//         &Fish
+//     }
+// }
 
 fn main() {}
