@@ -1132,5 +1132,5 @@ fn main() {
     let print = move || println!("`color`: {}", color);
 
     print();
-        print();
+    print();
 }
