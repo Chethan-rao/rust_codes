@@ -1112,6 +1112,8 @@
 // fn main() {
 //     let animal = return_an(1);
 //     animal.shout();
+// When Dog and Fish turn into Animal, they all forget how to walk and swim respoectively, only remember how to shout.
+// So, the code below will cause an error.
 //     // animal.walk; // This is type "&dyn Animal", in vtable, there will only be trait methods implemented on this, not the walk() or swim()
 // }
 
