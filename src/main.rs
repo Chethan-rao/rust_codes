@@ -1125,12 +1125,35 @@
 //     }
 // }
 
-/* Make it work with least amount of changes*/
-fn main() {
-    let color = String::from("green");
+// 35. Deref
+// use std::ops::Deref;
 
-    let print = move || println!("`color`: {}", color);
+// /* Make it work with least amount of changes*/
+// fn main() {
+//     let animal = Animal {
+//         cat: Cat {
+//             name: "abc".to_string(),
+//             color: "red".to_string(),
+//         },
+//     };
+//     let name = &animal.name;
+//     println!("{name:?}");
+// }
 
-    print();
-    print();
-}
+// struct Animal {
+//     cat: Cat,
+// }
+
+// impl Deref for Animal {
+//     type Target = Cat;
+//     fn deref(&self) -> &Self::Target {
+//         &self.cat
+//     }
+// }
+
+// struct Cat {
+//     name: String,
+//     color: String,
+// }
+
+fn main() {}
