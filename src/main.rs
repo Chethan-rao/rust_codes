@@ -1156,4 +1156,143 @@
 //     color: String,
 // }
 
+// 36. Deref - 2
+// use std::ops::Deref;
+
+// struct Abc {
+//     x: i32,
+// }
+// fn main() {
+//     let a = Abc { x: 5 };
+//     println!("{}", *a);
+// }
+
+// impl Deref for Abc {
+//     type Target = i32;
+//     fn deref(&self) -> &Self::Target {
+//         &self.x
+//     }
+// }
+
+// 38. serde - attribute - rename_all (PascalCase, snake_case, camelCase, SCREAMING_SNAKE_CASE, lowercase, UPPERCASE)
+// The rename_all attribute allows you to specify how field names should be transformed during serialization and deserialization.
+
+// use serde::{Deserialize, Serialize};
+// #[derive(Serialize, Deserialize, Debug)]
+// #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+// struct Person {
+//     first_name: String,
+//     last_name: String,
+//     age: u32,
+// }
+
+// fn main() {
+//     let chethan = Person {
+//         first_name: "Chethan".to_string(),
+//         last_name: "Rao".to_string(),
+//         age: 21,
+//     };
+//     let serialized_chethan = serde_json::to_value(chethan).unwrap(); // Serialization
+//     println!("{serialized_chethan:?}");
+
+//     let deserialized_chethan = serde_json::from_value::<Person>(serialized_chethan).unwrap(); // Deserialization
+//     println!("{deserialized_chethan:?}");
+// }
+
+// 39. serde - attribute - flatten()
+// The flatten attribute allows you to flatten nested structures during serialization and deserialization.
+
+// use serde::{Deserialize, Serialize};
+// #[derive(Serialize, Deserialize, Debug)]
+// struct Address {
+//     street: String,
+//     city: String,
+//     country: String,
+// }
+
+// #[derive(Serialize, Deserialize, Debug)]
+// struct Person {
+//     name: String,
+//     age: u32,
+//     #[serde(flatten)]
+//     address: Address,
+// }
+
+// fn main() {
+//     let chethan = Person {
+//         name: "Chethan".to_string(),
+//         age: 21,
+//         address: Address {
+//             street: "1st cross".to_string(),
+//             city: "Bangalore".to_string(),
+//             country: "India".to_string(),
+//         },
+//     };
+
+//     let serialized_chethan = serde_json::to_value(chethan).unwrap(); // Serialization
+//     println!("{serialized_chethan:?}");
+
+//     let deserialized_chethan = serde_json::from_value::<Person>(serialized_chethan).unwrap(); // Deserialization
+//     println!("{deserialized_chethan:?}");
+// }
+
+// 40. serde - rename - particular varient to another specified value during ser and deser. It over rides the global attribute as below
+// use serde::{Deserialize, Serialize};
+// #[derive(Serialize, Deserialize, Debug)]
+// #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+// struct Person {
+//     #[serde(rename = "f_name")]
+//     first_name: String,
+// }
+
+// fn main() {
+//     let chethan = Person {
+//         first_name: "Chethan".to_string(),
+//     };
+//     let serialized_chethan = serde_json::to_value(chethan).unwrap(); // Serialization
+//     println!("{serialized_chethan:?}");
+
+//     let deserialized_chethan = serde_json::from_value::<Person>(serialized_chethan).unwrap(); // Deserialization
+//     println!("{deserialized_chethan:?}");
+// }
+
+// 41. serde - tag and untagged (only for enums)
+// use serde::{Deserialize, Serialize};
+
+// #[derive(Debug, Serialize, Deserialize)]
+// // #[serde(tag = "type")]  ->  Will give enum name a type. i.e., {type: Wallet, amount: 4}
+// // #[serde(untagged)]  ->  Will not include the enum Name in serialized Value.
+// enum Payment {
+//     Wallet { amount: i32 },
+//     Card { amount: i32 },
+// }
+// fn main() {
+//     let pay = Payment::Wallet { amount: 4 };
+//     let ser_pay = serde_json::to_value(pay).unwrap();
+//     println!("{ser_pay:?}");
+// }
+
+// 37. Strum
+// use std::str::FromStr;
+
+// #[derive(
+//     Debug, Default, serde::Serialize, serde::Deserialize, strum::Display, strum::EnumString,
+// )]
+// #[strum(serialize_all = "snake_case")]
+// pub enum RefundType {
+//     #[strum(serialize = "InstantRefund", serialize = "instant_refund")]
+//     InstantRefund,
+//     #[default]
+//     RegularRefund,
+//     RetryRefund,
+//     Success,
+// }
+
+// fn main() {
+//     let a = RefundType::from_str("instant_refund").unwrap();
+//     println!("{a:?}");
+// }
+
+// 42 .
+
 fn main() {}

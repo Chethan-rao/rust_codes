@@ -9,4 +9,5 @@ edition = "2021"
 error-stack = "0.3.1"
 thiserror = "1.0.40"
 serde_json = "1.0.96"
-serde = { version = "1.0.163", features = ["derive"] } 
+serde = { version = "1.0.163", features = ["derive"] }
+strum = { version = "0.24.1", features = ["derive"] }
