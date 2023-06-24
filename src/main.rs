@@ -1276,10 +1276,20 @@
 // use std::str::FromStr;
 
 // #[derive(
-//     Debug, Default, serde::Serialize, serde::Deserialize, strum::Display, strum::EnumString,
+//     // strum::Display -> enables to_string() on enum varients
+//     // strum::EnumString -> enables from_str() on enum varients
+//     Debug,
+//     Default,
+//     serde::Serialize,
+//     serde::Deserialize,
+//     strum::Display,
+//     strum::EnumString,
 // )]
+// // #[strum(serialize_all = "case_style")] attribute can be used to change the case used when serializing to and deserializing from "strings".
 // #[strum(serialize_all = "snake_case")]
+// #[strum(ascii_case_insensitive)] // Supports 'Success' or 'sUCCesS'
 // pub enum RefundType {
+//     // matches on both, if anyone is satisfied, InstantRefund will be returned
 //     #[strum(serialize = "InstantRefund", serialize = "instant_refund")]
 //     InstantRefund,
 //     #[default]
@@ -1289,10 +1299,22 @@
 // }
 
 // fn main() {
-//     let a = RefundType::from_str("instant_refund").unwrap();
-//     println!("{a:?}");
+//     let a1 = RefundType::from_str("instant_refund").unwrap();
+//     let a2 = RefundType::from_str("InstantRefund").unwrap();
+//     println!("{a1:?} {a2:?}"); // Both r same
+
+//     let b = RefundType::from_str("regular_refund").unwrap();
+//     println!("{b:?}");
+
+//     let c = RefundType::RetryRefund.to_string(); // We get in snake_case
+//     println!("{c}");
 // }
 
 // 42 .
 
-fn main() {}
+fn main() {
+    let mut vec1: Vec<i32> = vec![67, 88, 99, 123];
+    let vec2 = vec1.drain().collect::<Vec<_>>();
+
+    println!("{vec2:?}");
+}
