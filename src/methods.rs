@@ -47,6 +47,13 @@
 // // Result: even_numbers = [2, 4, 6]
 // }
 
+// retain() -> Same as filter but when u want to filter on the called vector
+// fn main() {
+//     let mut vec = vec![1,2,3,4];
+//     vec.retain(|val| val % 2 ==0);
+//     println!("{vec:?}");
+// }
+
 // filter_map() -> The filter_map method is similar to filter, but it additionally allows transforming the elements before filtering. Returns an option
 // fn square_root(x: f64) -> Option<f64> {
 //     if x >= 0.0 {
@@ -55,6 +62,7 @@
 //         None
 //     }
 // }
+
 // fn main() {
 //     let numbers = vec![4.0, 9.0, -1.0, 16.0];
 //     let roots = numbers
@@ -201,3 +209,4 @@
 //     let a = Some("5");
 //     let b = a.map(|i| i.parse::<i32>()).transpose();
 // }
+

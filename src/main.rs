@@ -1421,4 +1421,67 @@
 //     window.draw();
 // }
 
+// fn main() {
+//     let s = RefundType {
+//         shipping: ShippingAddress {
+//             address: "ban".to_string()
+//         }
+//     };
+
+// }
+
+// #[derive(
+//     // strum::Display -> enables to_string() on enum varients
+//     // strum::EnumString -> enables from_str() on enum varients
+//     Debug,
+//     Default,
+//     serde::Serialize,
+//     serde::Deserialize,
+// )]
+
+// pub struct RefundType {
+//     // matches on both, if anyone is satisfied, InstantRefund will be returned
+//     shipping: ShippingAddress
+// }
+
+// #[derive(
+//     // strum::Display -> enables to_string() on enum varients
+//     // strum::EnumString -> enables from_str() on enum varients
+//     Debug,
+//     Default,
+//     serde::Serialize,
+//     serde::Deserialize,
+// )]
+// struct ShippingAddress {
+//     address: String
+// }
+
+//  43. Pass closure as parameter to another function
+// fn main() {
+//     fun2(fun);
+// }
+
+// fn fun() {
+//     println!("Hello");
+// }
+
+// fn fun2<F>(fun: F)
+// where
+//     F: Fn(),
+// {
+//     fun();
+// }
+
+// 44. Pass closure which accepts paramters to another functiom
+// fn main() {
+//     fun(5, |a, b| println!("Hello {a} {b}"));
+// }
+
+// fn fun<F>(a: i32, func: F)
+// where
+//     F: Fn(i32,i32),
+// {
+//     func(a,a)
+// }
+
 fn main() {}
