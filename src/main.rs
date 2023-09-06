@@ -852,11 +852,13 @@
 //     // In "into", u use into() by explicitly specifying the type
 //     let num2_into: Number = 34.into();
 
+//     let res: i32 = num1_from.into();
+
 //     println!("{num1_from:?}");
 //     println!("{num2_into:?}");
 // }
 
-// 29. Vec implments From<array>, that's y u can call into trait on array by specifying Vec as type
+// // 29. Vec implments From<array>, that's y u can call into trait on array by specifying Vec as type
 // fn main() {
 //     let arr = [1, 3, 4];
 //     let vec1 = Vec::from(arr);
@@ -1484,4 +1486,42 @@
 //     func(a,a)
 // }
 
-fn main() {}
+// fn main() {
+//     let a = None;
+//     let b = Some(6);
+//     let res = a.unwrap_or(b.unwrap());
+//     println!("{res:?}");
+// }
+
+// fn main() {
+//     let mut a = vec![1, 2, 3]; // Your vector a
+//     let max = 5; // The desired length of vector a
+//     let b = vec![2, 3, 4, 5, 6, 7]; // Your vector b
+
+//     // Filter out unique elements from b and add them to a until a.len() == max
+//     let unique_elements = b.iter().filter(|&x| !a.contains(x)).take(max - a.len());
+
+//     a.extend(unique_elements);
+
+//     println!("{:?}", a);
+// }
+
+// struct A {
+//     a: i32,
+//     b: i32,
+// }
+
+// struct B {
+//     a: i32,
+// }
+
+// impl From<B> for A {
+//     fn from(value: B) -> Self {
+//         Self { a: value.a, b: 0 }
+//     }
+// }
+// fn main() {
+//     let b = B { a: 4 };
+//     let a = A::from(b);
+//     let c = B::from(a);
+// }
