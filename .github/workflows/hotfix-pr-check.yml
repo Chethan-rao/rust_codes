@@ -1,0 +1,50 @@
+name: Hotfix-PR-Check
+
+on:
+  pull_request:
+    types: [opened, edited]
+    branches:
+      - "hotfix-*"
+
+jobs:
+  hotfix_pr_check:
+    name: Verify Hotfix PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get hotfix pull request body
+        shell: bash
+        run: echo '${{ github.event.pull_request.body }}' > hotfix_pr_body.txt
+
+      - name: Get a list of all original PR numbers
+        shell: bash
+        run: |
+          PR_NUMBERS=($(grep -oE "juspay/hyperswitch/pull/[0-9]+|#([0-9]+)" hotfix_pr_body.txt | sed 's/.*\///' | sed 's/#//')) 
+          if [ ${#PR_NUMBERS[@]} -eq 0 ]; then
+            echo "No original PRs found"
+            exit 1
+          else
+            echo "PR_NUMBERS=${PR_NUMBERS}" >> $GITHUB_ENV
+            echo "Original PR's found: ${PR_NUMBERS}"
+          fi
+
+      - name: Verify Original PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBERS="${PR_NUMBERS}"
+
+          for pr_number in "${PR_NUMBERS[@]}"; do
+            pr_info=$(gh pr view "${pr_number}" --json number,title,baseRefName,state,author)
+            pr_author=$(echo "${pr_info}" | jq -r '.author.login')
+            pr_title=$(echo "${pr_info}" | jq -r '.title')
+            pr_base_ref=$(echo "${pr_info}" | jq -r '.baseRefName')
+            pr_state=$(echo "${pr_info}" | jq -r '.state')
+            echo "pr_author = ${pr_author} \npr_title = ${pr_title} \npr_base_ref = ${pr_base_ref} \npr_state = ${pr_state}"
+            if [[ "${pr_author}" != "${{ github.event.pull_request.user.login }}" || "${pr_title}" != "${{ github.event.pull_request.title }}" || "${pr_base_ref}" != "master" || "${pr_state}" != "MERGED" ]]; then
+              echo "One or more checks failed for PR ${pr_number}."
+              exit 1
+            fi
+          done
