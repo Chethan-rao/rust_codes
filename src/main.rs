@@ -1525,3 +1525,129 @@
 //     let a = A::from(b);
 //     let c = B::from(a);
 // }
+
+// use serde::{Deserialize, Serialize};
+
+// #[derive(Serialize, Deserialize)]
+// struct InnerJson {
+//     #[serde(rename = "inner_field.field1")]
+//     field1: String,
+//     #[serde(rename = "inner_field.field2")]
+//     field2: i32,
+// }
+
+// #[derive(Serialize, Deserialize)]
+// struct OuterJson {
+//     outer_field: String,
+//     #[serde(flatten)]
+//     inner_field: InnerJson,
+// }
+
+// fn main() {
+//     // Create an instance of InnerJson
+//     let inner = InnerJson {
+//         field1: "value1".to_string(),
+//         field2: 42,
+//     };
+
+//     // Create an instance of OuterJson with the inner JSON struct
+//     let outer = OuterJson {
+//         outer_field: "outer_value".to_string(),
+//         inner_field: inner,
+//     };
+
+//     // Serialize the outer JSON object to a JSON string
+//     let json_str = serde_json::to_string(&outer).expect("Failed to serialize to JSON");
+
+//     println!("{}", json_str);
+// }
+
+// In OSS
+// struct Oss;
+
+// // In VAS
+// struct Vas;
+
+// // In OSS
+// trait ExtraThings {
+//     fn extra_fun();
+// }
+
+// // In OSS
+// impl ExtraThings for Oss {
+//     fn extra_fun() {
+//         println!("OSS");
+//     }
+// }
+
+// // In VAS
+// impl ExtraThings for Vas {
+//     fn extra_fun() {
+//         println!("VAS");
+//     }
+// }
+
+// // In OSS
+// fn make_pm_data<Ctx: ExtraThings>() {
+//     Ctx::extra_fun();
+// }
+
+// fn main() {
+//     make_pm_data::<Vas>();
+// }
+
+use error_stack::{IntoReport, Report, ResultExt};
+use serde::{Deserialize, Serialize};
+use std::fmt::Write;
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
+pub struct PaypalPaymentErrorResponse {
+    pub details: Option<Vec<ErrorDetails>>,
+}
+
+#[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ErrorDetails {
+    pub issue: String,
+    pub description: String,
+}
+
+fn main() -> Result<(), Report<ConnectorError>> {
+    let response = PaypalPaymentErrorResponse {
+        details: Some(vec![
+            ErrorDetails {
+                issue: "issue1".to_string(),
+                description: "desc1".to_string(),
+            },
+            ErrorDetails {
+                issue: "issue2".to_string(),
+                description: "desc2".to_string(),
+            },
+        ]),
+    };
+    let error_reason = response
+        .details
+        .map(|error_details| {
+            error_details
+                .iter()
+                .try_fold::<_, _, Result<_, Report<ConnectorError>>>(
+                    String::new(),
+                    |mut acc, error| {
+                        write!(acc, "description - {} ;", error.description)
+                            .into_report()
+                            .change_context(ConnectorError::ResponseDeserializationFailed)
+                            .attach_printable("Failed to write error details to string")
+                            .map(|_| acc)
+                    },
+                )
+        })
+        .transpose()?;
+    println!("{error_reason:?}");
+
+    Ok(())
+}
+
+#[derive(Debug, thiserror::Error, PartialEq)]
+
+enum ConnectorError {
+    #[error("Failed to encode connector request")]
+    ResponseDeserializationFailed,
+}
