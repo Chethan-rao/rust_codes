@@ -1,9 +1,11 @@
-name: CI
+name: CI-pr
 
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - edited
 
 jobs:
   formatting:
@@ -22,3 +24,20 @@ jobs:
       - name: Check formatting
         shell: bash
         run: cargo +nightly fmt --all --check
+
+  typos:
+    name: Spell check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Store PR title
+        shell: bash
+        run: echo '${{ github.event.pull_request.title }}' > pr_title.txt
+
+      - name: Spell check
+        uses: crate-ci/typos@master
+

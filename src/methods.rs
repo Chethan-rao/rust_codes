@@ -73,7 +73,7 @@
 // }
 
 // filter_map() v/s filter. filter will actually filter data based on condition. But filter_map does some thing on data and then converts it into
-// option and then takes only Some() varient.
+// option and then takes only Some() variant.
 // fn main() {
 //     let a = vec!["1.4","A+","0.6","3.6","B-"];
 //     let res = a.iter().filter_map(|&val| val.parse::<f32>().ok()).collect::<Vec<_>>();
@@ -209,4 +209,3 @@
 //     let a = Some("5");
 //     let b = a.map(|i| i.parse::<i32>()).transpose();
 // }
-

@@ -92,7 +92,7 @@
 
 // 5. Taking input
 
-// use std::io;  // std - crate and io - module and  :: path separator opeator
+// use std::io;  // std - crate and io - module and  :: path separator operator
 // fn main() {
 //     let mut input = String::new(); // declare empty string variable
 //     io::stdin()  // stdin is specific type for taking inputs
@@ -161,7 +161,7 @@
 //     println!("{}",sum);
 // }
 
-// fn add(x:i32, y:i32) -> i32 {   // necessary to mention type of paramter and return type
+// fn add(x:i32, y:i32) -> i32 {   // necessary to mention type of parameter and return type
 //     return x + y;
 //     // x + y // don't put semicolon, because this is default return statement
 // }
@@ -182,7 +182,7 @@
 
 // fn main(){
 //     let x = String::from("hello");
-//     let y = fun(&x); // passing referece of x
+//     let y = fun(&x); // passing reference of x
 //     println!("{}",x); // doesn't give error as x is not borrowed
 //     println!("{}",y);
 // }
@@ -628,7 +628,7 @@
 
 // pub trait Summary {   // Both struct can implement this trait (shared)
 //     fn summarize(&self); // other structs should implement this
-//     fn default_fun(&self) {  // If implemented, then this is overrided
+//     fn default_fun(&self) {  // If implemented, then this is overridden
 //       println!("Default trait");
 //     }
 // }
@@ -833,7 +833,7 @@
 //     return &Audi;
 // }
 
-// 28. Fron and into -> Both are same, If u implement From trait for a type, then Into will be automatically implemented as well
+// 28. From and into -> Both are same, If u implement From trait for a type, then Into will be automatically implemented as well
 // #[derive(Debug)]
 // struct Number {
 //     num: i32,
@@ -858,7 +858,7 @@
 //     println!("{num2_into:?}");
 // }
 
-// // 29. Vec implments From<array>, that's y u can call into trait on array by specifying Vec as type
+// // 29. Vec implements From<array>, that's y u can call into trait on array by specifying Vec as type
 // fn main() {
 //     let arr = [1, 3, 4];
 //     let vec1 = Vec::from(arr);
@@ -1238,7 +1238,7 @@
 //     println!("{deserialized_chethan:?}");
 // }
 
-// 40. serde - rename - particular varient to another specified value during ser and deser. It over rides the global attribute as below
+// 40. serde - rename - particular variant to another specified value during ser and deser. It over rides the global attribute as below
 // use serde::{Deserialize, Serialize};
 // #[derive(Serialize, Deserialize, Debug)]
 // #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -1278,8 +1278,8 @@
 // use std::str::FromStr;
 
 // #[derive(
-//     // strum::Display -> enables to_string() on enum varients
-//     // strum::EnumString -> enables from_str() on enum varients
+//     // strum::Display -> enables to_string() on enum variants
+//     // strum::EnumString -> enables from_str() on enum variants
 //     Debug,
 //     Default,
 //     serde::Serialize,
@@ -1318,13 +1318,13 @@
 // #![allow(unused_imports, unused_variables, dead_code)]
 
 // pub trait Widget {
-//     /// Natural width of `self`.
+//      Natural width of `self`.
 //     fn width(&self) -> usize;
 
-//     /// Draw the widget into a buffer.
+//      Draw the widget into a buffer.
 //     fn draw_into(&self, buffer: &mut dyn std::fmt::Write);
 
-//     /// Draw the widget on standard output.
+//      Draw the widget on standard output.
 //     fn draw(&self) {
 //         let mut buffer = String::new();
 //         self.draw_into(&mut buffer);
@@ -1433,8 +1433,8 @@
 // }
 
 // #[derive(
-//     // strum::Display -> enables to_string() on enum varients
-//     // strum::EnumString -> enables from_str() on enum varients
+//     // strum::Display -> enables to_string() on enum variants
+//     // strum::EnumString -> enables from_str() on enum variants
 //     Debug,
 //     Default,
 //     serde::Serialize,
@@ -1447,8 +1447,8 @@
 // }
 
 // #[derive(
-//     // strum::Display -> enables to_string() on enum varients
-//     // strum::EnumString -> enables from_str() on enum varients
+//     // strum::Display -> enables to_string() on enum variants
+//     // strum::EnumString -> enables from_str() on enum variants
 //     Debug,
 //     Default,
 //     serde::Serialize,
@@ -1474,7 +1474,7 @@
 //     fun();
 // }
 
-// 44. Pass closure which accepts paramters to another functiom
+// 44. Pass closure which accepts parameters to another function
 // fn main() {
 //     fun(5, |a, b| println!("Hello {a} {b}"));
 // }
