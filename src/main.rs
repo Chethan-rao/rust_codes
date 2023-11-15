@@ -1601,4 +1601,10 @@ enum PaymentMethod {
     Card,
     PayLater,
 }
-fn main() {}
+fn main() {
+    let r = PaymentMethod::Card;
+    match r {
+        PaymentMethod::Card => println!("Card"),
+        PaymentMethod::PayLater => println!("PayLater"),
+    }
+}
