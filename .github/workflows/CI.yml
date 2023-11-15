@@ -24,6 +24,35 @@ jobs:
       - name: Check formatting
         shell: bash
         run: cargo +nightly fmt --all --check
+  
+  test:
+    name: Run tests on stable toolchain
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install mold linker
+        uses: rui314/setup-mold@v1
+        if: ${{ runner.os == 'Linux' }}
+        with:
+          make-default: true
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable 2 weeks ago
+          components: clippy
+
+      - name: Run cargo check
+        shell: bash
+        run: cargo check --all-features --all-targets
 
   typos:
     name: Spell check
