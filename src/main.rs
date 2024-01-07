@@ -1596,8 +1596,42 @@
 //     make_pm_data::<Vas>();
 // }
 
-#[allow(dead_code)]
-enum PaymentMethod {
-    Card,
+////////////////////////////////////////////////////////////////////////////////////
+
+use base64::Engine;
+
+fn main() {
+    // Base-64: Groups binary into 6 bits (2^6 = 64 characters) and encodes to its own character from BASE-64 chart
+    let a = b"And"; // or let a = "And".as_bytes()
+
+    let en = base64::engine::general_purpose::STANDARD.encode(a); // You can even pass direct String, it will get converted to bytes internally
+
+    let de = base64::engine::general_purpose::STANDARD
+        .decode(en.clone())
+        .unwrap(); // Gives UTF-8 values of "And"
+
+    let de = String::from_utf8(de); // Generate String from utf-8 which is "And"
+
+    println!("{en:?} {de:?}");
+
+    ////////////////////////////////////////////////////////
+
+    // Hex encoding: Groups binary into 4 bits (2^4 = 16 characters) and encodes to its own character from Hex chart
+    // let String = "he"
+    // Binary = (h)01101000 (e)01100101
+    // Group into 4 bits
+    // 0110 1000 0110 0101
+    //  6    8    6    5
+
+    let a = "he";
+
+    let hex_en = hex::encode(a);
+
+    let hex_de = hex::decode(hex_en.clone()).unwrap(); // Gives UTF-8 values of "he"
+
+    let hex_de = String::from_utf8(hex_de); // Generate String from utf-8 which is "he"
+
+    println!("{hex_en:?} {hex_de:?}"); // 6865 "he"
 }
-fn main() {}
+
+////////////////////////////////////////////////////////////////////////////////////
