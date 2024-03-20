@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - edited
+
+jobs:
+  print_title_of_pr:
+    runs-on: ubuntu-20.04
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Print Title of PR
+        run: |
+          echo "${PR_TITLE}"
+
+      - name: Print Title of PR2
+        run: |
+          echo "::error::Hotfix PR title does not match any of the Original PR titles. Hotfix PR title: '${PR_TITLE}'"
+
+      - name: Print Title of PR2
+        run: |
+          echo '::error::Hotfix PR title does not match any of the Original PR titles. Hotfix PR title: '${PR_TITLE}''
