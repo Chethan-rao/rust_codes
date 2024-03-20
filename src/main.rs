@@ -1598,40 +1598,254 @@
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-use base64::Engine;
+// use enum_dispatch::enum_dispatch;
 
-fn main() {
-    // Base-64: Groups binary into 6 bits (2^6 = 64 characters) and encodes to its own character from BASE-64 chart
-    let a = b"And"; // or let a = "And".as_bytes()
+// #[enum_dispatch]
+// trait KnobControl {
+//     fn get_value(&self) -> f64;
+// }
 
-    let en = base64::engine::general_purpose::STANDARD.encode(a); // You can even pass direct String, it will get converted to bytes internally
+// #[derive(Debug)]
+// struct LinearKnob;
 
-    let de = base64::engine::general_purpose::STANDARD
-        .decode(en.clone())
-        .unwrap(); // Gives UTF-8 values of "And"
+// impl KnobControl for LinearKnob {
+//     fn get_value(&self) -> f64 {
+//         1.0
+//     }
+// }
 
-    let de = String::from_utf8(de); // Generate String from utf-8 which is "And"
+// #[derive(Debug)]
+// struct LogarithmicKnob;
 
-    println!("{en:?} {de:?}");
+// impl KnobControl for LogarithmicKnob {
+//     fn get_value(&self) -> f64 {
+//         2.0
+//     }
+// }
 
-    ////////////////////////////////////////////////////////
+// #[enum_dispatch(KnobControl)]
+// #[derive(Debug)]
 
-    // Hex encoding: Groups binary into 4 bits (2^4 = 16 characters) and encodes to its own character from Hex chart
-    // let String = "he"
-    // Binary = (h)01101000 (e)01100101
-    // Group into 4 bits
-    // 0110 1000 0110 0101
-    //  6    8    6    5
+// enum Knob {
+//     LinearKnob,
+//     LogarithmicKnob,
+// }
 
-    let a = "he";
+// fn main() {
+//     let a = Knob::from(LinearKnob);
 
-    let hex_en = hex::encode(a);
-
-    let hex_de = hex::decode(hex_en.clone()).unwrap(); // Gives UTF-8 values of "he"
-
-    let hex_de = String::from_utf8(hex_de); // Generate String from utf-8 which is "he"
-
-    println!("{hex_en:?} {hex_de:?}"); // 6865 "he"
-}
+//     println!("{:?}", a)
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////
+
+// TypeState pattern
+
+// struct Settings {
+//     db_password: String,
+// }
+// struct Decryptable<S: State> {
+//     state: Settings,
+//     marker: std::marker::PhantomData<S>,
+// }
+
+// /// decrypt valid only in Encrypted state.
+// impl Decryptable<Encrypted> {
+//     fn decrypt(self) -> Decryptable<Raw> {
+//         Decryptable {
+//             state: Settings {
+//                 db_password: "decrypted".to_string(),
+//             },
+//             marker: std::marker::PhantomData,
+//         }
+//     }
+// }
+
+// impl<S: State> Decryptable<S> {
+//     fn inner_value(self) -> Settings {
+//         self.state
+//     }
+// }
+
+// enum Encrypted {}
+// enum Raw {}
+
+// trait State {}
+// impl State for Encrypted {}
+// impl State for Raw {}
+
+// fn main() {
+//     // parsed as encrypted value
+//     let parsed_config: Decryptable<Encrypted> = Decryptable {
+//         state: Settings {
+//             db_password: "encrypted".to_string(),
+//         },
+//         marker: std::marker::PhantomData,
+//     };
+
+//     let raw_decryptable = parsed_config.decrypt();
+
+//     let decrypted_settings = raw_decryptable.inner_value();
+
+//     println!("{:?}", decrypted_settings.db_password); // decrypted
+// }
+
+////////////////////////////////////////////////////////////////////////////////////
+
+// use std::marker::PhantomData;
+
+// trait EncryptionState {}
+// #[derive(Clone, Debug)]
+
+// struct Decrypted {}
+
+// #[derive(Clone, Debug)]
+// struct Encrypted {}
+
+// impl EncryptionState for Decrypted {}
+// impl EncryptionState for Encrypted {}
+
+// // Placeholder KMS client
+// struct KMSClient {}
+
+// impl KMSClient {
+//     fn decrypt(&self, _: String) -> String {
+//         "decrypted".to_string()
+//     }
+// }
+
+// #[derive(Debug, Clone)]
+// struct Decryptable<T, S: EncryptionState> {
+//     inner: T,
+//     marker: PhantomData<S>,
+// }
+
+// impl<T> Decryptable<T, Encrypted> {
+//     fn decrypt(mut self, decryptor_fn: impl FnOnce(T) -> T) -> Decryptable<T, Decrypted> {
+//         self.inner = decryptor_fn(self.inner);
+//         Decryptable {
+//             inner: self.inner,
+//             marker: PhantomData,
+//         }
+//     }
+// }
+
+// trait Decryption
+// where
+//     Self: Sized,
+// {
+//     fn decrypt(
+//         value: Decryptable<Self, Encrypted>,
+//         kms_client: &KMSClient,
+//     ) -> Decryptable<Self, Decrypted>;
+// }
+
+// #[derive(Clone, Debug)]
+// struct Database {
+//     dbname: String,
+//     password: String,
+// }
+
+// impl Decryption for Database {
+//     fn decrypt(
+//         value: Decryptable<Self, Encrypted>,
+//         kms_client: &KMSClient,
+//     ) -> Decryptable<Self, Decrypted> {
+//         value.decrypt(|a| Database {
+//             dbname: a.dbname,
+//             password: kms_client.decrypt(a.password),
+//         })
+//     }
+// }
+
+// #[derive(Debug)]
+// struct Settings<S: EncryptionState> {
+//     db: Decryptable<Database, S>,
+// }
+
+// fn main() {
+//     let db = Database {
+//         dbname: "hyper".to_string(),
+//         password: "encrypted".to_string(),
+//     };
+
+//     let decryptable_db: Decryptable<Database, Encrypted> = Decryptable {
+//         inner: db.clone(),
+//         marker: PhantomData,
+//     };
+
+//     let mut state = Settings {
+//         db: decryptable_db.clone(),
+//     };
+
+//     let decrypted_val = Database::decrypt(decryptable_db, &KMSClient {});
+
+//     let decrypted_settings = Settings { db: decrypted_val };
+// }
+
+////////////////////////////////////////////////////////////
+
+// struct AwsKmsClient;
+
+// impl AwsKmsClient {
+//     fn encrypt(&self, data: String) {}
+
+//     fn decrypt(&self, data: String) {}
+// }
+
+// struct HcVaultClient;
+
+// impl HcVaultClient {
+//     fn fetch(&self, data: String) {}
+// }
+
+// pub trait SecretsManagementInterface {
+//     fn store_secret(&self, input: String);
+
+//     fn get_secret(&self, input: String);
+// }
+
+// impl SecretsManagementInterface for AwsKmsClient {
+//     fn store_secret(&self, input: String) {
+//         self.encrypt(input)
+//     }
+
+//     fn get_secret(&self, input: String) {
+//         self.decrypt(input)
+//     }
+// }
+
+// impl SecretsManagementInterface for HcVaultClient {
+//     fn store_secret(&self, input: String) {
+//         unimplemented!()
+//     }
+
+//     fn get_secret(&self, input: String) {
+//         self.fetch(input)
+//     }
+// }
+
+// pub trait EncryptionManagementInterface {
+//     fn encrypt(&self, input: String);
+
+//     fn decrypt(&self, input: String);
+// }
+
+// impl EncryptionManagementInterface for AwsKmsClient {
+//     fn encrypt(&self, input: String) {
+//         self.encrypt(input)
+//     }
+
+//     fn decrypt(&self, input: String) {
+//         self.decrypt(input)
+//     }
+// }
+
+// struct AppState {
+//     pub encryption_client: Box<dyn EncryptionManagementInterface>,
+// }
+
+// fn main() {}
+
+///////////////////////////////////////////////////////////////////////////
+

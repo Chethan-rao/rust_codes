@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-error-stack = "0.3.1"
+error-stack = "*"
 thiserror = "1.0.40"
 serde_json = "1.0.96"
 serde = { version = "1.0.163", features = ["derive"] }
@@ -17,3 +17,6 @@ moka = { version = "0.12.1", features = ["future"] }
 tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 base64 = "*"
 hex = "*"
+enum_dispatch = "*"
+diesel = { version = "1.4", features = ["postgres"] }
+dotenv = "0.15"
