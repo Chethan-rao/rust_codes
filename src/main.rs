@@ -1596,9 +1596,4 @@
 //     make_pm_data::<Vas>();
 // }
 
-#[allow(dead_code)]
-enum PaymentMethod {
-    Card,
-    PayLater,
-}
 fn main() {}
