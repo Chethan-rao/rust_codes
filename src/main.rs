@@ -1596,9 +1596,133 @@
 //     make_pm_data::<Vas>();
 // }
 
-#[allow(dead_code)]
-enum PaymentMethod {
-    Card,
-    PayLater,
-}
-fn main() {}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // 45. Tokio spawn
+// #[tokio::main]
+// async fn main() {
+//     let ops = vec![1, 2, 3];
+//     let mut tasks = Vec::with_capacity(ops.len());
+//     for op in ops {
+//         // This call will make them start running in the background
+//         // immediately.
+//         tasks.push(tokio::spawn(my_background_op(op)));
+//     }
+
+//     let mut outputs = Vec::with_capacity(tasks.len());
+//     for task in tasks {
+//         outputs.push(task.await.unwrap());
+//     }
+//     println!("{:?}", outputs);
+// }
+
+// async fn my_background_op(id: i32) -> String {
+//     let s = format!("Starting background task {}.", id);
+//     println!("{}", s);
+//     s
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 46. When to use Box smart pointer -
+// - When u have variable with a trait type whose size cannot be computed at compile time, wrap it in Box
+// - Recursive data types
+
+// trait Vehicle {
+//     fn drive(&self);
+// }
+// struct Truck;
+
+// impl Vehicle for Truck {
+//     fn drive(&self) {
+//         println!("Truck is driving");
+//     }
+// }
+
+// fn main() {
+//     let truck: Box<dyn Vehicle>;
+
+//     truck = Box::new(Truck);
+//     truck.drive();
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 47. When to use Rc smart pointer (Gives shared ownership to a value)-
+// In case of normal reference (&), when owner goes out of scope, u can't use those reference anymore
+// But in case of Rc, even though owner goes out of scope or moved, u can still use it until Rc count goes to 0 (refer below)
+// Basically rust has rule like - only one owner can exists for a variable
+// But in Rc, every variable is a owner of that value, and the value will only be deallocated when every variable goes out of scope.
+
+// use std::rc::Rc;
+
+// struct Truck {
+//     cap: i32,
+// }
+
+// fn main() {
+//     // No. of ref to this object - 1
+//     let truck1 = Rc::new(Truck { cap: 5 });
+
+// No. of ref incremented to +1 - 2
+// let truck2 = Rc::clone(&truck1);
+// println!("{:?}", Rc::strong_count(&truck1)); // prints 2. still will be 2 if u took strong count of &truck2
+//                                              // Ownership is transfered still No. of ref remains same - 2
+// let truck3 = truck1;
+// // No. of ref is still 2. still will be 2 if u took strong count of &truck3.
+// println!("{:?}", Rc::strong_count(&truck2)); // prints 2
+//                                              // One reference got dropped so now no. of ref - 1
+// std::mem::drop(truck3);
+// // No. of ref is now decremented so - 1
+// println!("{:?}", Rc::strong_count(&truck2)); // prints 1
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 48. When to use Arc (Atomically referenced counter)
+// Rc doesn't implement Send (safe to send value to another thread) nor Sync (safe to share value between threads) traits.
+// Assume value `A` allocated in heap. thread1 holds RC ref to `A` and thread2 also holds RC ref to `A`.
+// So currently count of reference to `A` is 2. if both threads try to clone using Rc::clone, there will be data race
+// and instead of count becoming 4, it might become 3.
+// So use Arc instead which implements both Send and Sync trait.
+
+// But Arc doesn't support mutability of inner value as multiple owners shares this value
+// So u can wrap the inner value with `Mutex` first and then with Arc. Example Arc::new(Mutex::new(5));
+// Now, even though `5` can be shared with multiple owners, only one thread can mutate it at a time
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 49. Closure example
+
+// Type which lives only in main function
+// struct AppState {
+//     db: String
+// }
+
+// impl AppState {
+//     fn alter(&self) -> String {
+//         format!("{}_innerval",self.db)
+//     }
+// }
+
+// fn main() {
+//     // Lives in main function
+//     let state = AppState { db: "samn".to_string() };
+
+//     // Piece of code which has to be executed in helper function, which requires state as argument
+//     // but helper function doesn't take `state` as argument. So create a closure within main
+//     // and write all code which has to be executed in helper function. Pass this closure as argument
+//     // to helper function
+//     let closure = || {
+//         state.alter()
+//     };
+
+//     helper(closure);
+// }
+
+// fn helper<F>(f: F) where F: Fn() -> String {
+//     let res = f();
+//     println!("{res:?}");
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
