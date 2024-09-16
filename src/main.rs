@@ -1920,7 +1920,7 @@
 // No. of ref incremented to +1 - 2
 // let truck2 = Rc::clone(&truck1);
 // println!("{:?}", Rc::strong_count(&truck1)); // prints 2. still will be 2 if u took strong count of &truck2
-//                                              // Ownership is transfered still No. of ref remains same - 2
+//                                              // Ownership is transferred still No. of ref remains same - 2
 // let truck3 = truck1;
 // // No. of ref is still 2. still will be 2 if u took strong count of &truck3.
 // println!("{:?}", Rc::strong_count(&truck2)); // prints 2
@@ -2043,6 +2043,192 @@
 //     {
 //         func1(self)
 //     }
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 50. Custom Option methods impl
+// #[allow(dead_code)]
+// #[derive(Debug, PartialEq)]
+// enum MyOption<T> {
+//     Some(T),
+//     None,
+// }
+
+// use MyOption::{None, Some};
+
+// #[allow(dead_code)]
+// impl<T> MyOption<T> {
+//     fn is_some(&self) -> bool {
+//         matches!(self, Some(_))
+//     }
+
+//     fn is_some_and<F>(self, func: F) -> bool
+//     where
+//         F: FnOnce(T) -> bool,
+//     {
+//         match self {
+//             Some(inner) => func(inner),
+//             None => false,
+//         }
+//     }
+
+//     fn as_ref(&self) -> MyOption<&T> {
+//         match self {
+//             Some(inner) => Some(inner),
+//             None => None,
+//         }
+//     }
+
+//     fn unwrap_or(self, default: T) -> T {
+//         match self {
+//             Some(x) => x,
+//             None => default,
+//         }
+//     }
+
+//     fn unwrap_or_else<F>(self, func: F) -> T
+//     where
+//         F: FnOnce() -> T,
+//     {
+//         match self {
+//             Some(x) => x,
+//             None => func(),
+//         }
+//     }
+
+//     fn unwrap_or_default(self) -> T
+//     where
+//         T: Default,
+//     {
+//         match self {
+//             Some(x) => x,
+//             None => T::default(),
+//         }
+//     }
+
+//     fn map<U, F>(self, func: F) -> MyOption<U>
+//     where
+//         F: FnOnce(T) -> U,
+//     {
+//         match self {
+//             Some(x) => Some(func(x)),
+//             None => None,
+//         }
+//     }
+
+//     fn inspect<F>(self, func: F) -> Self
+//     where
+//         F: FnOnce(&T),
+//     {
+//         if let Some(ref x) = self {
+//             func(x);
+//         }
+
+//         self
+//     }
+
+//     fn map_or<U, F>(self, default: U, func: F) -> U
+//     where
+//         F: FnOnce(T) -> U,
+//     {
+//         match self {
+//             Some(x) => func(x),
+//             None => default,
+//         }
+//     }
+
+//     fn map_or_else<U, F, G>(self, default: G, func: F) -> U
+//     where
+//         F: FnOnce(T) -> U,
+//         G: FnOnce() -> U,
+//     {
+//         match self {
+//             Some(x) => func(x),
+//             None => default(),
+//         }
+//     }
+
+//     fn ok_or<E>(self, err: E) -> Result<T, E> {
+//         match self {
+//             Some(x) => Ok(x),
+//             None => Err(err),
+//         }
+//     }
+
+//     fn ok_or_else<F, E>(self, func: F) -> Result<T, E>
+//     where
+//         F: FnOnce() -> E,
+//     {
+//         match self {
+//             Some(x) => Ok(x),
+//             None => Err(func()),
+//         }
+//     }
+
+//     fn and<U>(self, next: MyOption<U>) -> MyOption<U> {
+//         match self {
+//             Some(_) => next,
+//             None => None,
+//         }
+//     }
+
+//     fn and_then<U, F>(self, next_func: F) -> MyOption<U>
+//     where
+//         F: FnOnce(T) -> MyOption<U>,
+//     {
+//         match self {
+//             Some(x) => next_func(x),
+//             None => None,
+//         }
+//     }
+
+//     fn filter<P>(self, predicate: P) -> Self
+//     where
+//         P: FnOnce(&T) -> bool,
+//     {
+//         if let Some(x) = self {
+//             if predicate(&x) {
+//                 return Some(x);
+//             }
+//         }
+//         None
+//     }
+
+//     fn or(self, default: Self) -> Self {
+//         match self {
+//             val @ Some(_) => val,
+//             None => default,
+//         }
+//     }
+
+//     fn or_else<F>(self, default: F) -> Self
+//     where
+//         F: FnOnce() -> Self,
+//     {
+//         match self {
+//             val @ Some(_) => val,
+//             None => default(),
+//         }
+//     }
+
+//     fn xor(self, other: Self) -> Self {
+//         match (self, other) {
+//             (val @ Some(_), None) => val,
+//             (None, val @ Some(_)) => val,
+//             _ => None,
+//         }
+//     }
+
+//     fn take(self) -> Self {
+//         self
+//     }
+// }
+
+// fn main() {
+//     let x: MyOption<i32> = Some(5);
+//     let y = x.take();
+//     println!("{y:?}");
 // }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
