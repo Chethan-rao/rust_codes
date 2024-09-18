@@ -2048,6 +2048,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // 50. Custom Option methods impl
+
 // #[allow(dead_code)]
 // #[derive(Debug, PartialEq)]
 // enum MyOption<T> {
@@ -2233,6 +2234,8 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// 51. Custom Result methods impl
+
 // #[allow(dead_code)]
 // #[derive(Debug)]
 // pub enum MyResult<T, E> {
@@ -2309,6 +2312,70 @@
 //     let x = res.and_then(|inner| Ok(inner + 1));
 
 //     println!("{x:?}");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 52. Vector with at least single element
+
+// use std::fmt::Debug;
+
+// struct Vector<T> {
+//     first: T,
+//     rest: Vec<T>,
+// }
+
+// #[macro_export]
+// macro_rules! vec {
+//     ($first:expr) => {
+//         Vector::new($first)
+//     };
+
+//     ($first:expr, $($rest:expr),*) => {{
+//         let mut vector = Vector::new($first);
+//         $(
+//             vector.push($rest);
+//         )*
+//         vector
+//     }};
+// }
+
+// impl<T> Vector<T> {
+//     fn new(first: T) -> Self {
+//         Self {
+//             first,
+//             rest: Vec::default(),
+//         }
+//     }
+
+//     fn push(&mut self, element: T) {
+//         self.rest.push(element);
+//     }
+// }
+
+// impl<T: Debug + Clone> Debug for Vector<T> {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         let first = self.first.clone();
+//         let mut vector = Vec::default();
+//         vector.push(first);
+//         vector.extend(self.rest.clone());
+
+//         Debug::fmt(&vector, f)
+//     }
+// }
+
+// fn main() {
+//     let mut vecc = vec![1];
+//     vecc.push(2);
+//     vecc.push(3);
+//     println!("{vecc:?}");
+
+//     let vecc = vec![1, 2];
+//     println!("{vecc:?}");
+
+//     // Error
+//     // let vecc = vec![];
+//     // println!("{vecc:?}");
 // }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
