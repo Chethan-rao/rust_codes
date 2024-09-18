@@ -2231,6 +2231,86 @@
 //     println!("{y:?}");
 // }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// #[allow(dead_code)]
+// #[derive(Debug)]
+// pub enum MyResult<T, E> {
+//     Ok(T),
+//     Err(E),
+// }
+
+// #[allow(dead_code)]
+// use MyResult::{Err, Ok};
+
+// #[allow(dead_code)]
+// impl<T, E> MyResult<T, E> {
+//     fn is_ok(&self) -> bool {
+//         matches!(self, Ok(_))
+//     }
+
+//     fn is_ok_and<F>(self, func: F) -> bool
+//     where
+//         F: FnOnce(T) -> bool,
+//     {
+//         match self {
+//             Ok(x) => func(x),
+//             Err(_) => false,
+//         }
+//     }
+
+//     fn is_err_and<F>(self, func: F) -> bool
+//     where
+//         F: FnOnce(E) -> bool,
+//     {
+//         match self {
+//             Ok(_) => false,
+//             Err(e) => func(e),
+//         }
+//     }
+//     fn ok(self) -> Option<T> {
+//         match self {
+//             Ok(x) => Some(x),
+//             Err(_) => None,
+//         }
+//     }
+
+//     fn as_ref(&self) -> MyResult<&T, &E> {
+//         match *self {
+//             Ok(ref x) => Ok(x),
+//             Err(ref e) => Err(e),
+//         }
+//     }
+
+//     fn map<F, U>(self, func: F) -> MyResult<U, E>
+//     where
+//         F: FnOnce(T) -> U,
+//     {
+//         match self {
+//             Ok(x) => Ok(func(x)),
+//             Err(e) => Err(e),
+//         }
+//     }
+
+//     fn and_then<F, U>(self, func: F) -> MyResult<U, E>
+//     where
+//         F: FnOnce(T) -> MyResult<U, E>,
+//     {
+//         match self {
+//             Ok(x) => func(x),
+//             Err(e) => Err(e),
+//         }
+//     }
+// }
+
+// fn main() {
+//     let res: MyResult<i32, i32> = Ok(5);
+
+//     let x = res.and_then(|inner| Ok(inner + 1));
+
+//     println!("{x:?}");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn main() {}
