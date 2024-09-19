@@ -2380,4 +2380,95 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// 53. Custom Secret impl
+
+// use std::marker::PhantomData;
+
+// fn main() {
+//     let a = Example { a: Secret::new(4) };
+
+//     println!("{a:?}");
+// }
+
+// #[derive(Debug)]
+// struct Example {
+//     a: Secret<i32>,
+// }
+
+// struct Secret<T, Strategy = WithType>
+// where
+//     Strategy: StrategyTrait,
+// {
+//     pub inner_secret: T,
+//     pub strategy: PhantomData<Strategy>,
+// }
+
+// impl<T> Secret<T> {
+//     fn new(ele: T) -> Self {
+//         Secret {
+//             inner_secret: ele,
+//             strategy: PhantomData,
+//         }
+//     }
+// }
+
+// impl<T> std::fmt::Debug for Secret<T> {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         write!(f, "** {} **", std::any::type_name::<T>())
+//     }
+// }
+
+// trait StrategyTrait {}
+
+// pub enum WithType {}
+
+// impl StrategyTrait for WithType {}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 54. PhantomData usecase
+
+// #[derive(Debug)]
+// struct MyType<T = EncryptedState>
+// where
+//     T: SecuredState,
+// {
+//     field: i32,
+//     type1: std::marker::PhantomData<T>,
+// }
+
+// impl<T> MyType<T>
+// where
+//     T: SecuredState,
+// {
+//     fn new(field: i32) -> Self {
+//         Self {
+//             field,
+//             type1: std::marker::PhantomData,
+//         }
+//     }
+// }
+
+// trait SecuredState {}
+
+// #[derive(Debug)]
+// struct RawState;
+
+// #[derive(Debug)]
+// struct EncryptedState;
+
+// impl SecuredState for RawState {}
+
+// impl SecuredState for EncryptedState {}
+
+// fn main() {
+//     let mytype1: MyType = MyType::new(45);
+
+//     println!("{mytype1:?}");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 55.
+
 fn main() {}
