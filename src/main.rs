@@ -2471,4 +2471,267 @@
 
 // 55.
 
-fn main() {}
+// fn main() {
+//     let abc = Example {
+//         f0: 5,
+//         f1: None,
+//         f2: None,
+//     };
+
+//     let res = serde_json::to_value(abc).unwrap();
+
+//     println!("{res:?}");
+
+//     let res1 = serde_json::from_value::<Example>(res).unwrap();
+//     println!("{res1:?}");
+// }
+
+// trait ExampleTrait {
+//     fn print();
+// }
+
+// mod private_module {
+//     trait SealedTrait
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// struct Example<const N: i32 = 1> {
+//     field: i32,
+// }
+
+// impl<const N: i32> Example<N> {
+//     pub fn new(field: i32) -> Self {
+//         let _ = <Self as AssertGt0>::VALID;
+
+//         Self { field }
+//     }
+// }
+
+// trait AssertGt0 {
+//     const VALID: ();
+// }
+
+// impl<const N: i32> AssertGt0 for Example<N> {
+//     const VALID: () = assert!(N > 0);
+// }
+
+// fn main() {
+//     let a: Example<-1> = Example { field: 5 };
+//     println!("{:?}", a.field);
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Calling associated method
+
+// #[derive(Debug)]
+// struct Example(i32);
+
+// trait ExampleTrait {
+//     type AssociatedType;
+//     fn associated_method();
+// }
+
+// impl ExampleTrait for Example {
+//     type AssociatedType = String;
+
+//     fn associated_method() {
+//         println!("hello");
+//     }
+// }
+
+// fn main() {
+//     let example = Example(5);
+
+//     <Example as ExampleTrait>::associated_method();
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// use std::{
+//     collections::HashMap,
+//     hash::{Hash, Hasher},
+// };
+
+// use rand::{prelude::Distribution, Rng, SeedableRng};
+
+// fn main() {
+//     use std::collections::hash_map;
+
+//     use rand::distributions;
+//     let mut res: HashMap<String, i32> = HashMap::default();
+
+//     for _ in 0..20 {
+//         let mut splits = vec![("braintree", 40), ("stripe", 10), ("adyen", 50)];
+
+//         let weights = splits.iter().map(|(_, b)| b).collect::<Vec<_>>();
+
+//         let rng_seed: Option<&str> = None;
+//         let weighted_index = distributions::WeightedIndex::new(weights).unwrap();
+
+//         let idx = if let Some(seed) = rng_seed {
+//             let mut hasher = hash_map::DefaultHasher::new();
+//             seed.hash(&mut hasher);
+//             let hash = hasher.finish();
+
+//             let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(hash);
+//             weighted_index.sample(&mut rng)
+//         } else {
+//             let mut rng = rand::thread_rng();
+//             weighted_index.sample(&mut rng)
+//         };
+
+//         splits.get(idx).unwrap();
+
+//         // Panic Safety: We have performed a `get(idx)` operation just above which will
+//         // ensure that the index is always present, else throw an error.
+//         let removed = splits.remove(idx);
+//         splits.insert(0, removed);
+
+//         let cc = splits[0].0.to_string();
+//         println!(">> {:?}", cc);
+
+//         match res.get_mut(&cc) {
+//             Some(val) => *val = *val + 1,
+//             None => {
+//                 res.insert(cc, 1);
+//             }
+//         };
+//     }
+//     println!(">> final {res:?}");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// use common_utils::types::MinorUnit;
+// use euclid::{
+//     backend::{inputs, EuclidBackend, VirInterpreterBackend},
+//     enums,
+//     frontend::ast,
+//     types::DummyOutput,
+// };
+
+// fn main() {
+//     let program_str = r#"
+//         default: ["stripe", "adyen"]
+
+//         rule_1: ["stripe"]
+//         {
+//             payment_method = pay_later
+//             or
+//             amount = 34
+//         }
+//         "#;
+
+//     let (_, program) = ast::parser::program::<DummyOutput>(program_str).expect("Program");
+//     println!(">> {program:?}");
+//     let inp = inputs::BackendInput {
+//         metadata: None,
+//         payment: inputs::PaymentInput {
+//             amount: MinorUnit::new(32),
+//             currency: enums::Currency::USD,
+//             card_bin: None,
+//             authentication_type: Some(enums::AuthenticationType::NoThreeDs),
+//             capture_method: Some(enums::CaptureMethod::Automatic),
+//             business_country: Some(enums::Country::UnitedStatesOfAmerica),
+//             billing_country: Some(enums::Country::France),
+//             business_label: None,
+//             setup_future_usage: None,
+//         },
+//         payment_method: inputs::PaymentMethodInput {
+//             payment_method: Some(enums::PaymentMethod::PayLater),
+//             payment_method_type: Some(enums::PaymentMethodType::Affirm),
+//             card_network: None,
+//         },
+//         mandate: inputs::MandateData {
+//             mandate_acceptance_type: None,
+//             mandate_type: None,
+//             payment_type: None,
+//         },
+//     };
+
+//     let backend = VirInterpreterBackend::<DummyOutput>::with_program(program).expect("Program");
+//     let result = backend.execute(inp).expect("Execution");
+//     println!(">> {result:?}");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+use std::{
+    thread,
+    time::{self, Duration, Instant},
+};
+
+use serde_json::{json, Value};
+
+#[derive(Debug)]
+struct LeakyBucket {
+    capacity: usize,
+    ttl: std::time::Duration, // time to leak 1 entry
+    current_level: usize,
+    last_leak: std::time::Instant,
+}
+
+impl LeakyBucket {
+    pub fn new(capacity: usize, ttl: Duration) -> Self {
+        Self {
+            capacity,
+            ttl,
+            current_level: 0,
+            last_leak: Instant::now(),
+        }
+    }
+
+    fn refresh(&mut self) {
+        let now = Instant::now();
+        let elapsed = now - self.last_leak;
+
+        // Update the last_leak and current_level only if the elapsed time is greater than ttl
+        if elapsed >= self.ttl {
+            let cl = self
+                .current_level
+                .saturating_sub(elapsed.div_duration_f64(self.ttl).floor() as usize);
+            self.last_leak = now;
+            self.current_level -= cl;
+        }
+    }
+
+    pub fn add(&mut self, amount: usize) -> bool {
+        self.refresh();
+
+        let res = if self.current_level + amount <= self.capacity {
+            self.current_level += amount;
+            // self.last_leak = get_current_time_in_secs();
+            true
+        } else {
+            false
+        };
+        // println!(">>{self:?} - {:?}", self.last_leak.elapsed());
+        res
+    }
+    pub fn check_if_full(&mut self) -> bool {
+        self.refresh();
+        self.current_level >= self.capacity
+    }
+}
+
+fn main() {
+    let mut bucket = LeakyBucket::new(6, Duration::from_secs(6));
+
+    for _ in 0..6 {
+        thread::sleep(Duration::from_secs(1));
+        _ = bucket.add(1);
+    }
+    dbg!(&bucket);
+
+    assert!(!bucket.add(1), "What!?");
+    thread::sleep(Duration::from_secs(1));
+    assert!(!bucket.add(1), "This should work");
+}
+
+pub(crate) fn get_current_time_in_secs() -> Duration {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+}
