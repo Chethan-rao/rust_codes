@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 # axum-server = { version = "*" }
 # axum = "*"
-error-stack = "0.3.1"
+error-stack = "0.4.1"
 # thiserror = "1.0.40"
 serde_json = "1.0.96"
 serde = { version = "1.0.163", features = ["derive"] }
@@ -18,8 +18,11 @@ tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 async-trait = "*"
 # futures = "*"
 nom = "*"
-euclid = { git = "https://github.com/juspay/hyperswitch", rev = "c7bb9ccda3ce307ffba29072b28bdea0a0eaa7f5", features = ["ast_parser", "valued_jit"] }
-common_enums = { git = "https://github.com/juspay/hyperswitch", rev = "c7bb9ccda3ce307ffba29072b28bdea0a0eaa7f5" }
-common_utils = { git = "https://github.com/juspay/hyperswitch", rev = "c7bb9ccda3ce307ffba29072b28bdea0a0eaa7f5" }
 rand = "*"
 rand_chacha = "*"
+config = { version = "0.14.0", features = ["toml"] }
+
+
+# masking = { git = "https://github.com/juspay/hyperswitch", tag = "v1.112.2" }
+# hyperswitch_interfaces = { git = "https://github.com/juspay/hyperswitch", tag = "v1.112.2", features = ["v1"] }
+# external_services = { git = "https://github.com/juspay/hyperswitch", tag = "v1.112.2", features = ["v1"] }

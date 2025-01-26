@@ -1825,24 +1825,8 @@
 //     }
 // }
 
-// pub trait EncryptionManagementInterface {
-//     fn encrypt(&self, input: String);
-
-//     fn decrypt(&self, input: String);
-// }
-
-// impl EncryptionManagementInterface for AwsKmsClient {
-//     fn encrypt(&self, input: String) {
-//         self.encrypt(input)
-//     }
-
-//     fn decrypt(&self, input: String) {
-//         self.decrypt(input)
-//     }
-// }
-
 // struct AppState {
-//     pub encryption_client: Box<dyn EncryptionManagementInterface>,
+//     pub secrets_manager_client: Box<dyn SecretsManagementInterface>,
 // }
 
 // fn main() {}
@@ -2429,7 +2413,7 @@
 // 54. PhantomData usecase
 
 // #[derive(Debug)]
-// struct MyType<T = EncryptedState>
+// struct MyType<T>
 // where
 //     T: SecuredState,
 // {
@@ -2658,80 +2642,479 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use std::{
-    thread,
-    time::{self, Duration, Instant},
-};
+// use std::{
+//     thread,
+//     time::{self, Duration, Instant, SystemTime},
+// };
 
-use serde_json::{json, Value};
+// use serde_json::{json, Value};
 
-#[derive(Debug)]
-struct LeakyBucket {
-    capacity: usize,
-    ttl: std::time::Duration, // time to leak 1 entry
-    current_level: usize,
-    last_leak: std::time::Instant,
+// #[derive(Debug, serde::Deserialize, serde::Serialize)]
+// struct LeakyBucket {
+//     capacity: usize,
+//     leak_rate: std::time::Duration,
+//     level: usize,
+//     last_leak: std::time::SystemTime,
+// }
+
+// impl LeakyBucket {
+//     pub fn new(capacity: usize, leak_rate: Duration) -> Self {
+//         Self {
+//             capacity,
+//             leak_rate,
+//             level: 0,
+//             last_leak: SystemTime::now(),
+//         }
+//     }
+
+//     fn refresh(&mut self) {
+//         let now = SystemTime::now();
+//         let elapsed = now.duration_since(self.last_leak).unwrap();
+//         let cl = elapsed.div_duration_f64(self.leak_rate).floor() as usize;
+
+//         if cl > 0 {
+//             self.last_leak = now;
+//             self.level = self.level.saturating_sub(cl);
+//         }
+//     }
+
+//     pub fn add(&mut self, amount: usize) -> bool {
+//         self.refresh();
+
+//         if self.level + amount <= self.capacity {
+//             self.level += amount;
+//             true
+//         } else {
+//             false
+//         }
+//     }
+//     pub fn check_if_full(&mut self) -> bool {
+//         self.refresh();
+//         self.level >= self.capacity
+//     }
+// }
+// fn main() {
+//     let mut bucket = LeakyBucket::new(6, Duration::from_secs(6));
+
+//     // for _ in 0..6 {
+//     //     bucket.add(1);
+//     // }
+
+//     // thread::sleep(Duration::from_secs(6));
+//     // bucket.refresh();
+//     // dbg!(&bucket);
+//     // for _ in 0..6 {
+//     //     thread::sleep(Duration::from_secs(1));
+//     //     bucket.refresh();
+//     // }
+
+//     // // dbg!(bucket);
+
+//     println!("{}", serde_json::to_string(&bucket).unwrap());
+// }
+
+// pub(crate) fn get_current_time_in_secs() -> Duration {
+//     std::time::SystemTime::now()
+//         .duration_since(std::time::UNIX_EPOCH)
+//         .unwrap()
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// use config::Config;
+// use external_services::managers::secrets_management::SecretsManagementConfig;
+// use hyperswitch_interfaces::secrets_interface::{
+//     secret_handler::SecretsHandler,
+//     secret_state::{RawSecret, SecretState, SecretStateContainer, SecuredSecret},
+//     SecretManagementInterface, SecretsManagementError,
+// };
+// use masking::ExposeInterface;
+// use serde::Deserialize;
+
+// #[derive(Debug, Deserialize, Clone, Default)]
+// #[serde(default)]
+// pub struct Settings<S: SecretState> {
+//     pub master_database: SecretStateContainer<Database, S>,
+//     pub secrets_management: SecretsManagementConfig,
+// }
+
+// #[derive(Clone, Default, Deserialize, Debug)]
+// struct Database {
+//     password: String,
+// }
+
+// #[async_trait::async_trait]
+// impl SecretsHandler for Database {
+//     async fn convert_to_raw_secret(
+//         value: SecretStateContainer<Self, SecuredSecret>,
+//         secret_management_client: &dyn SecretManagementInterface,
+//     ) -> error_stack::Result<SecretStateContainer<Self, RawSecret>, SecretsManagementError> {
+//         let db = value.get_inner();
+//         let db_password = secret_management_client
+//             .get_secret(db.password.clone().into())
+//             .await?;
+
+//         Ok(value.transition_state(|db| Self {
+//             password: db_password.expose(),
+//             ..db
+//         }))
+//     }
+// }
+
+// #[tokio::main]
+// async fn main() {
+//     let settings = Config::builder()
+//         .add_source(config::File::with_name(
+//             "/Users/chethan.rao/playground/rust/config/dev.toml",
+//         ))
+//         .add_source(config::Environment::with_prefix("APP"))
+//         .build()
+//         .unwrap();
+
+//     let secured_settings = settings
+//         .try_deserialize::<Settings<SecuredSecret>>()
+//         .unwrap();
+
+//     let secret_management_client = secured_settings
+//         .secrets_management
+//         .get_secret_management_client()
+//         .await
+//         .unwrap();
+
+//     let database = Database::convert_to_raw_secret(
+//         secured_settings.master_database,
+//         &*secret_management_client,
+//     )
+//     .await
+//     .expect("Failed to decrypt database password");
+
+//     println!(">> {database:?}");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // 56. MultiArmedBandit problem
+// Run below commands if facing dependency issue
+// python3 -m venv path/to/venv
+// source path/to/venv/bin/activate
+// python3 -m pip install pandas
+// use rand::Rng;
+// use std::io::Write;
+// use std::process::Command;
+// use std::{collections::HashMap, fs::File};
+
+// #[derive(Debug)]
+// struct ConnectorStats {
+//     successful_txn: i64,
+//     total_txn: u64,
+// }
+
+// struct MultiArmedBandit {
+//     connectors: HashMap<String, ConnectorStats>,
+//     total_pulls: u64,
+//     exploration_constant: f64,
+// }
+
+// impl MultiArmedBandit {
+//     fn new(exploration_constant: f64) -> Self {
+//         MultiArmedBandit {
+//             connectors: HashMap::new(),
+//             total_pulls: 0,
+//             exploration_constant,
+//         }
+//     }
+
+//     fn add_connector(&mut self, name: &str) {
+//         self.connectors.insert(
+//             name.to_string(),
+//             ConnectorStats {
+//                 successful_txn: 0,
+//                 total_txn: 0,
+//             },
+//         );
+//     }
+
+//     fn log_exploration_exploitation(
+//         log_file: &mut File,
+//         name: &str,
+//         exploitation: f64,
+//         exploration: f64,
+//         txn_count: u64,
+//     ) {
+//         writeln!(
+//             log_file,
+//             "{},{},{},{}",
+//             txn_count, name, exploitation, exploration
+//         )
+//         .expect("Failed to write to log file");
+//     }
+
+//     // fn log_selected_connector(log_file: &mut File, name: &str) {
+//     //     writeln!(log_file, "selected_connector: {}", name).expect("Failed to write to log file");
+//     // }
+
+//     fn select_connector(&self, log_file: &mut File) -> Option<String> {
+//         if self.total_pulls == 0 {
+//             return self
+//                 .connectors
+//                 .iter()
+//                 .filter(|(_, stats)| stats.total_txn == 0)
+//                 .map(|(name, _)| name.clone())
+//                 .next();
+//         }
+
+//         let connector = self
+//             .connectors
+//             .iter()
+//             .map(|(name, stats)| {
+//                 let exploitation = if stats.successful_txn == 0 && stats.total_txn == 0 {
+//                     0.0
+//                 } else {
+//                     stats.successful_txn as f64 / stats.total_txn as f64
+//                 };
+
+//                 let exploration =
+//                     (2.0 * (self.total_pulls as f64).ln() / stats.total_txn as f64).sqrt();
+//                 let exploration = if exploration.is_nan() {
+//                     0.0
+//                 } else {
+//                     let normalized_exploration = (exploration - 0.0) / (2.0 - 0.0);
+//                     normalized_exploration * self.exploration_constant
+//                 };
+
+//                 let ucb = exploitation + exploration;
+//                 println!(
+//                     "{name}         - exploitation: {exploitation} exploration: {exploration}"
+//                 );
+
+//                 Self::log_exploration_exploitation(
+//                     log_file,
+//                     name,
+//                     exploitation,
+//                     exploration,
+//                     self.total_pulls,
+//                 );
+
+//                 (name.clone(), ucb)
+//             })
+//             .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+//             .map(|(name, _)| name);
+
+//         // if let Some(ref connector) = connector {
+//         //     Self::log_selected_connector(log_file, &connector);
+//         // }
+//         connector
+//     }
+
+//     fn update(&mut self, connector_name: &str, success: bool) {
+//         if let Some(stats) = self.connectors.get_mut(connector_name) {
+//             stats.total_txn += 1;
+//             self.total_pulls += 1;
+
+//             let reward = if success { 1 } else { 0 };
+
+//             stats.successful_txn += reward;
+//         }
+//     }
+
+//     fn get_stats(&self) -> Vec<(String, i64, u64, f64)> {
+//         self.connectors
+//             .iter()
+//             .map(|(name, stats)| {
+//                 let average_reward = if stats.total_txn > 0 {
+//                     stats.successful_txn as f64 / stats.total_txn as f64
+//                 } else {
+//                     0.0
+//                 };
+//                 (
+//                     name.clone(),
+//                     stats.successful_txn,
+//                     stats.total_txn,
+//                     average_reward,
+//                 )
+//             })
+//             .collect()
+//     }
+// }
+// fn simulate_connector_performance() {
+//     let mut rng = rand::thread_rng();
+//     let mut mab = MultiArmedBandit::new(1.0);
+
+//     let mut log_file = File::create("multi_arm_bandit_files/exploration_exploitation_log.csv")
+//         .expect("Failed to create log file");
+//     writeln!(log_file, "Transaction,Connector,Exploitation,Exploration").unwrap();
+
+//     mab.add_connector("adyen        ");
+//     mab.add_connector("bankofamerica");
+//     mab.add_connector("cybersource  ");
+
+//     for _ in 0..300 {
+//         if let Some(selected_connector) = mab.select_connector(&mut log_file) {
+//             let rng_val = match selected_connector.as_str() {
+//                 "adyen        " => rng.gen_range(0.9..0.95),
+//                 "bankofamerica" => rng.gen_range(0.7..0.75),
+//                 "cybersource  " => rng.gen_range(0.8..0.85),
+//                 _ => rng.gen_range(0.8..1.0),
+//             };
+
+//             let success = rng.gen_bool(rng_val);
+//             println!("-----------------------------------------------");
+//             let status = if success { "success" } else { "failed" };
+//             println!(">> selected_connector: {selected_connector}, status: {status}");
+//             mab.update(&selected_connector, success);
+//         }
+//     }
+
+//     println!("\nFinal Statistics 1:");
+//     for (name, successful_txn, total_txn, avg_reward) in mab.get_stats() {
+//         println!(
+//             "Connector: {} , {}/{} , Average Reward: {:.4}",
+//             name, successful_txn, total_txn, avg_reward,
+//         );
+//     }
+
+//     println!("Log file written: exploration_exploitation_log.csv");
+// }
+
+// fn main() {
+//     simulate_connector_performance();
+
+//     Command::new("python3")
+//         .arg("multi_arm_bandit_files/plot.py")
+//         .output()
+//         .expect("Failed to execute python script");
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 57. Non stationary MAB
+
+use rand::Rng;
+use std::collections::VecDeque;
+
+// Gateway structure representing each payment gateway
+#[derive(Clone, Debug)]
+struct Gateway {
+    id: String,
+    success_window: VecDeque<bool>,
+    window_size: usize,
+    success_rate: f64,
 }
 
-impl LeakyBucket {
-    pub fn new(capacity: usize, ttl: Duration) -> Self {
-        Self {
-            capacity,
-            ttl,
-            current_level: 0,
-            last_leak: Instant::now(),
+impl Gateway {
+    fn new(id: String, window_size: usize) -> Self {
+        Gateway {
+            id,
+            success_window: VecDeque::with_capacity(window_size),
+            window_size,
+            success_rate: 0.0,
         }
     }
 
-    fn refresh(&mut self) {
-        let now = Instant::now();
-        let elapsed = now - self.last_leak;
+    // Update gateway performance and recalculate success rate
+    fn update_performance(&mut self, is_success: bool) {
+        // Maintain sliding window
+        if self.success_window.len() == self.window_size {
+            self.success_window.pop_front();
+        }
+        self.success_window.push_back(is_success);
 
-        // Update the last_leak and current_level only if the elapsed time is greater than ttl
-        if elapsed >= self.ttl {
-            let cl = self
-                .current_level
-                .saturating_sub(elapsed.div_duration_f64(self.ttl).floor() as usize);
-            self.last_leak = now;
-            self.current_level -= cl;
+        // Recalculate success rate
+        let successful_txns = self.success_window.iter().filter(|&&x| x).count();
+        self.success_rate = successful_txns as f64 / self.success_window.len() as f64;
+    }
+}
+
+// Dynamic Gateway Router
+struct DynamicGatewayRouter {
+    gateways: Vec<Gateway>,
+    window_size: usize,
+    hedging_factor: f64,
+}
+
+impl DynamicGatewayRouter {
+    fn new(gateways: Vec<Gateway>, window_size: usize, hedging_factor: f64) -> Self {
+        DynamicGatewayRouter {
+            gateways,
+            window_size,
+            hedging_factor,
         }
     }
 
-    pub fn add(&mut self, amount: usize) -> bool {
-        self.refresh();
+    // Select gateway based on success rate and hedging
+    fn select_gateway(&mut self) -> &mut Gateway {
+        let mut rng = rand::thread_rng();
 
-        let res = if self.current_level + amount <= self.capacity {
-            self.current_level += amount;
-            // self.last_leak = get_current_time_in_secs();
-            true
+        // Decide whether to explore or exploit
+        if rng.gen::<f64>() < self.hedging_factor {
+            // Exploration: randomly select a gateway
+            let random_index = rng.gen_range(0..self.gateways.len());
+            &mut self.gateways[random_index]
         } else {
-            false
-        };
-        // println!(">>{self:?} - {:?}", self.last_leak.elapsed());
-        res
+            // Exploitation: select gateway with highest success rate
+            self.gateways
+                .iter_mut()
+                .max_by(|a, b| a.success_rate.partial_cmp(&b.success_rate).unwrap())
+                .unwrap()
+        }
     }
-    pub fn check_if_full(&mut self) -> bool {
-        self.refresh();
-        self.current_level >= self.capacity
+
+    // Simulate transaction routing
+    fn route_transaction(&mut self, is_successful: bool) {
+        let selected_gateway = self.select_gateway();
+
+        selected_gateway.update_performance(is_successful);
+    }
+
+    // Compute statistical significance of gateway performance difference
+    fn compute_performance_difference(&self) -> f64 {
+        if self.gateways.len() < 2 {
+            return 0.0;
+        }
+
+        let gateways: Vec<&Gateway> = self.gateways.iter().collect();
+        let (gw1, gw2) = (gateways[0], gateways[1]);
+
+        // Normalized performance difference
+        let mu_diff = gw2.success_rate - gw1.success_rate;
+        let variance = (gw1.success_rate * (1.0 - gw1.success_rate) / self.window_size as f64)
+            + (gw2.success_rate * (1.0 - gw2.success_rate) / self.window_size as f64);
+
+        mu_diff / variance.sqrt()
     }
 }
 
+// Example usage and simulation
 fn main() {
-    let mut bucket = LeakyBucket::new(6, Duration::from_secs(6));
+    // Initialize gateways with initial configurations
+    let gateways = vec![
+        Gateway::new("Gateway1".to_string(), 1000),
+        Gateway::new("Gateway2".to_string(), 1000),
+    ];
 
-    for _ in 0..6 {
-        thread::sleep(Duration::from_secs(1));
-        _ = bucket.add(1);
+    // Configure router with optimal parameters
+    let mut router = DynamicGatewayRouter::new(
+        gateways.clone(),
+        1119,   // Optimal window size from paper
+        0.1554, // Optimal hedging factor
+    );
+
+    // Simulate transactions
+    for _ in 0..10000 {
+        let is_successful = rand::thread_rng().gen_bool(0.8); // 80% success probability
+        router.route_transaction(is_successful);
     }
-    dbg!(&bucket);
 
-    assert!(!bucket.add(1), "What!?");
-    thread::sleep(Duration::from_secs(1));
-    assert!(!bucket.add(1), "This should work");
-}
+    // Print final gateway performance
+    for gateway in router.gateways.iter() {
+        println!(
+            "{} Success Rate: {:.2}%",
+            gateway.id,
+            gateway.success_rate * 100.0
+        );
+    }
 
-pub(crate) fn get_current_time_in_secs() -> Duration {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+    // Compute performance difference
+    let perf_diff = router.compute_performance_difference();
+    println!("Performance Difference Significance: {:.4}", perf_diff);
 }

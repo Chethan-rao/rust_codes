@@ -1,0 +1,9 @@
+# [secrets_management]
+# secrets_manager = "aws_kms" # Secrets manager client to be used
+
+# [secrets_management.aws_kms]
+# key_id = "kms_key_id" # The AWS key ID used by the KMS SDK for decrypting data.
+# region = "kms_region"
+
+[master_database]
+password = "hello"
