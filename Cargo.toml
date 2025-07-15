@@ -4,25 +4,33 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+example = []
 
 [dependencies]
-# axum-server = { version = "*" }
-# axum = "*"
+axum-server = { version = "*" }
+axum = { version = "*", features = ["macros"] }
 error-stack = "0.4.1"
-# thiserror = "1.0.40"
+thiserror = "1.0.40"
 serde_json = "1.0.96"
 serde = { version = "1.0.163", features = ["derive"] }
 strum = { version = "0.26", features = ["derive"] }
 # time = { version = "0.3.21" }
-tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
+# tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 async-trait = "*"
 # futures = "*"
 nom = "*"
 rand = "*"
 rand_chacha = "*"
 config = { version = "0.14.0", features = ["toml"] }
+rustc-hash = "2.0"
 
+fred = "5.2"
+moka = "0.10"
+tokio = { version = "1", features = ["full"] }
 
+chrono = { version = "0.4", features = ["serde"] }
 # masking = { git = "https://github.com/juspay/hyperswitch", tag = "v1.112.2" }
 # hyperswitch_interfaces = { git = "https://github.com/juspay/hyperswitch", tag = "v1.112.2", features = ["v1"] }
 # external_services = { git = "https://github.com/juspay/hyperswitch", tag = "v1.112.2", features = ["v1"] }
+redis_interface = { git = "https://github.com/juspay/hyperswitch.git", tag = "2024.09.30.0" }

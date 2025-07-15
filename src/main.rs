@@ -1831,7 +1831,51 @@
 
 // fn main() {}
 
-///////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// use std::marker::PhantomData;
+
+// #[derive(Debug)]
+// struct Settings<S: State> {
+//     db_password: String,
+//     state: PhantomData<S>,
+// }
+
+// trait State {}
+
+// #[derive(Debug)]
+// struct Encrypted;
+// impl State for Encrypted {}
+
+// #[derive(Debug)]
+// struct Decrypted;
+// impl State for Decrypted {}
+
+// impl Settings<Encrypted> {
+//     fn decrypt(self) -> Settings<Decrypted> {
+//         Settings {
+//             db_password: self.db_password, // decrypt password and assign it
+//             state: PhantomData::<Decrypted>,
+//         }
+//     }
+// }
+
+// impl<S: State + std::fmt::Debug> Settings<S> {
+//     fn print(&self) {
+//         println!("Settings: {:?}", self);
+//     }
+// }
+
+// fn main() {
+//     let config = Settings {
+//         db_password: "db_pass".to_string(),
+//         state: PhantomData::<Encrypted>,
+//     };
+//     config.print();
+
+//     let raw_config = config.decrypt();
+//     raw_config.print();
+// }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2989,132 +3033,195 @@
 
 // 57. Non stationary MAB
 
-use rand::Rng;
-use std::collections::VecDeque;
+// use rand::Rng;
+// use std::collections::VecDeque;
 
-// Gateway structure representing each payment gateway
-#[derive(Clone, Debug)]
-struct Gateway {
-    id: String,
-    success_window: VecDeque<bool>,
-    window_size: usize,
-    success_rate: f64,
-}
+// // Gateway structure representing each payment gateway
+// #[derive(Clone, Debug)]
+// struct Gateway {
+//     id: String,
+//     success_window: VecDeque<bool>,
+//     window_size: usize,
+//     success_rate: f64,
+// }
 
-impl Gateway {
-    fn new(id: String, window_size: usize) -> Self {
-        Gateway {
-            id,
-            success_window: VecDeque::with_capacity(window_size),
-            window_size,
-            success_rate: 0.0,
-        }
-    }
+// impl Gateway {
+//     fn new(id: String, window_size: usize) -> Self {
+//         Gateway {
+//             id,
+//             success_window: VecDeque::with_capacity(window_size),
+//             window_size,
+//             success_rate: 0.0,
+//         }
+//     }
 
-    // Update gateway performance and recalculate success rate
-    fn update_performance(&mut self, is_success: bool) {
-        // Maintain sliding window
-        if self.success_window.len() == self.window_size {
-            self.success_window.pop_front();
-        }
-        self.success_window.push_back(is_success);
+//     // Update gateway performance and recalculate success rate
+//     fn update_performance(&mut self, is_success: bool) {
+//         // Maintain sliding window
+//         if self.success_window.len() == self.window_size {
+//             self.success_window.pop_front();
+//         }
+//         self.success_window.push_back(is_success);
 
-        // Recalculate success rate
-        let successful_txns = self.success_window.iter().filter(|&&x| x).count();
-        self.success_rate = successful_txns as f64 / self.success_window.len() as f64;
-    }
-}
+//         // Recalculate success rate
+//         let successful_txns = self.success_window.iter().filter(|&&x| x).count();
+//         self.success_rate = successful_txns as f64 / self.success_window.len() as f64;
+//     }
+// }
 
-// Dynamic Gateway Router
-struct DynamicGatewayRouter {
-    gateways: Vec<Gateway>,
-    window_size: usize,
-    hedging_factor: f64,
-}
+// // Dynamic Gateway Router
+// struct DynamicGatewayRouter {
+//     gateways: Vec<Gateway>,
+//     window_size: usize,
+//     hedging_factor: f64,
+// }
 
-impl DynamicGatewayRouter {
-    fn new(gateways: Vec<Gateway>, window_size: usize, hedging_factor: f64) -> Self {
-        DynamicGatewayRouter {
-            gateways,
-            window_size,
-            hedging_factor,
-        }
-    }
+// impl DynamicGatewayRouter {
+//     fn new(gateways: Vec<Gateway>, window_size: usize, hedging_factor: f64) -> Self {
+//         DynamicGatewayRouter {
+//             gateways,
+//             window_size,
+//             hedging_factor,
+//         }
+//     }
 
-    // Select gateway based on success rate and hedging
-    fn select_gateway(&mut self) -> &mut Gateway {
-        let mut rng = rand::thread_rng();
+//     // Select gateway based on success rate and hedging
+//     fn select_gateway(&mut self) -> &mut Gateway {
+//         let mut rng = rand::thread_rng();
 
-        // Decide whether to explore or exploit
-        if rng.gen::<f64>() < self.hedging_factor {
-            // Exploration: randomly select a gateway
-            let random_index = rng.gen_range(0..self.gateways.len());
-            &mut self.gateways[random_index]
-        } else {
-            // Exploitation: select gateway with highest success rate
-            self.gateways
-                .iter_mut()
-                .max_by(|a, b| a.success_rate.partial_cmp(&b.success_rate).unwrap())
-                .unwrap()
-        }
-    }
+//         // Decide whether to explore or exploit
+//         if rng.gen::<f64>() < self.hedging_factor {
+//             // Exploration: randomly select a gateway
+//             let random_index = rng.gen_range(0..self.gateways.len());
+//             &mut self.gateways[random_index]
+//         } else {
+//             // Exploitation: select gateway with highest success rate
+//             self.gateways
+//                 .iter_mut()
+//                 .max_by(|a, b| a.success_rate.partial_cmp(&b.success_rate).unwrap())
+//                 .unwrap()
+//         }
+//     }
 
-    // Simulate transaction routing
-    fn route_transaction(&mut self, is_successful: bool) {
-        let selected_gateway = self.select_gateway();
+//     // Simulate transaction routing
+//     fn route_transaction(&mut self, is_successful: bool) {
+//         let selected_gateway = self.select_gateway();
 
-        selected_gateway.update_performance(is_successful);
-    }
+//         selected_gateway.update_performance(is_successful);
+//     }
 
-    // Compute statistical significance of gateway performance difference
-    fn compute_performance_difference(&self) -> f64 {
-        if self.gateways.len() < 2 {
-            return 0.0;
-        }
+//     // Compute statistical significance of gateway performance difference
+//     fn compute_performance_difference(&self) -> f64 {
+//         if self.gateways.len() < 2 {
+//             return 0.0;
+//         }
 
-        let gateways: Vec<&Gateway> = self.gateways.iter().collect();
-        let (gw1, gw2) = (gateways[0], gateways[1]);
+//         let gateways: Vec<&Gateway> = self.gateways.iter().collect();
+//         let (gw1, gw2) = (gateways[0], gateways[1]);
 
-        // Normalized performance difference
-        let mu_diff = gw2.success_rate - gw1.success_rate;
-        let variance = (gw1.success_rate * (1.0 - gw1.success_rate) / self.window_size as f64)
-            + (gw2.success_rate * (1.0 - gw2.success_rate) / self.window_size as f64);
+//         // Normalized performance difference
+//         let mu_diff = gw2.success_rate - gw1.success_rate;
+//         let variance = (gw1.success_rate * (1.0 - gw1.success_rate) / self.window_size as f64)
+//             + (gw2.success_rate * (1.0 - gw2.success_rate) / self.window_size as f64);
 
-        mu_diff / variance.sqrt()
-    }
-}
+//         mu_diff / variance.sqrt()
+//     }
+// }
 
-// Example usage and simulation
-fn main() {
-    // Initialize gateways with initial configurations
-    let gateways = vec![
-        Gateway::new("Gateway1".to_string(), 1000),
-        Gateway::new("Gateway2".to_string(), 1000),
-    ];
+// // Example usage and simulation
+// fn main() {
+//     // Initialize gateways with initial configurations
+//     let gateways = vec![
+//         Gateway::new("Gateway1".to_string(), 1000),
+//         Gateway::new("Gateway2".to_string(), 1000),
+//     ];
 
-    // Configure router with optimal parameters
-    let mut router = DynamicGatewayRouter::new(
-        gateways.clone(),
-        1119,   // Optimal window size from paper
-        0.1554, // Optimal hedging factor
-    );
+//     // Configure router with optimal parameters
+//     let mut router = DynamicGatewayRouter::new(
+//         gateways.clone(),
+//         1119,   // Optimal window size from paper
+//         0.1554, // Optimal hedging factor
+//     );
 
-    // Simulate transactions
-    for _ in 0..10000 {
-        let is_successful = rand::thread_rng().gen_bool(0.8); // 80% success probability
-        router.route_transaction(is_successful);
-    }
+//     // Simulate transactions
+//     for _ in 0..10000 {
+//         let is_successful = rand::thread_rng().gen_bool(0.8); // 80% success probability
+//         router.route_transaction(is_successful);
+//     }
 
-    // Print final gateway performance
-    for gateway in router.gateways.iter() {
-        println!(
-            "{} Success Rate: {:.2}%",
-            gateway.id,
-            gateway.success_rate * 100.0
-        );
-    }
+//     // Print final gateway performance
+//     for gateway in router.gateways.iter() {
+//         println!(
+//             "{} Success Rate: {:.2}%",
+//             gateway.id,
+//             gateway.success_rate * 100.0
+//         );
+//     }
 
-    // Compute performance difference
-    let perf_diff = router.compute_performance_difference();
-    println!("Performance Difference Significance: {:.4}", perf_diff);
-}
+//     // Compute performance difference
+//     let perf_diff = router.compute_performance_difference();
+//     println!("Performance Difference Significance: {:.4}", perf_diff);
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// pub trait DynamicRouting {
+//     type Response;
+
+//     fn get_val(&self) -> Self::Response;
+// }
+
+// impl DynamicRouting for Example1 {
+//     type Response = i32;
+
+//     fn get_val(&self) -> Self::Response {
+//         self.inner
+//     }
+// }
+
+// impl DynamicRouting for Example2 {
+//     type Response = String;
+
+//     fn get_val(&self) -> Self::Response {
+//         self.inner.clone()
+//     }
+// }
+
+// impl DynamicRouting for Example3 {
+//     type Response = i32;
+
+//     fn get_val(&self) -> Self::Response {
+//         self.inner1
+//     }
+// }
+
+// #[derive(Debug)]
+// struct Example1 {
+//     inner: i32,
+// }
+
+// struct Example2 {
+//     inner: String,
+// }
+
+// struct Example3 {
+//     inner1: i32,
+// }
+
+// struct DynDispatch {
+//     inner: Box<dyn DynamicRouting<Response = i32>>,
+// }
+
+// fn helper(val: i32) -> Box<dyn DynamicRouting<Response = i32>> {
+//     if val == 1 {
+//         Box::new(Example1 { inner: 5 })
+//     } else {
+//         Box::new(Example3 { inner1: 10 })
+//     }
+// }
+
+// fn main() {
+//     let example = DynDispatch { inner: helper(3) };
+//     println!(">> {:?}", example.inner.get_val());
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
